@@ -11,4 +11,8 @@ class PostController extends Controller
         $posts = Post::latest()->get();
         return view('residentsScreen.home',compact('posts'));
     }
+
+    public function admin() {
+        return view('residentsScreen.admin');
+    }
 }
