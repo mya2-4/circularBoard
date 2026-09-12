@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>みるまち管理 - 回覧管理</title>
+<title>みるまち管理 - イベント管理</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -17,10 +17,12 @@
     --line: #E2DFD3;
     --card: #FFFFFF;
     --danger: #A9673B;
-    --status-public-bg: #EAF1EC;
-    --status-public-text: #4E6B5A;
-    --status-draft-bg: #F1EEE6;
-    --status-draft-text: #8A7A5C;
+    --status-open-bg: #EAF1EC;
+    --status-open-text: #4E6B5A;
+    --status-closed-bg: #F1EEE6;
+    --status-closed-text: #8A7A5C;
+    --status-ended-bg: #EFEBE6;
+    --status-ended-text: #9A978C;
   }
   *{box-sizing:border-box;}
   html,body{ height:100%; margin:0; }
@@ -165,11 +167,43 @@
   .btn-primary:hover{ background:var(--panel-soft); }
   .btn-primary svg{ width:15px; height:15px; }
 
+  /* Stat cards */
+  .stats-row{
+    display:flex;
+    gap:16px;
+    padding:20px 36px 0;
+  }
+  .stat-card{
+    flex:1;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 20px;
+  }
+  .stat-label{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .stat-value{
+    font-family:'Noto Serif JP', serif;
+    font-size:26px;
+    font-weight:500;
+    color:var(--ink);
+  }
+  .stat-value span{
+    font-size:13px;
+    font-family:'Noto Sans JP', sans-serif;
+    color:var(--ink-soft);
+    font-weight:400;
+    margin-left:4px;
+  }
+
   .toolbar{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:20px 36px 0;
+    padding:22px 36px 0;
   }
   .tabs{ display:flex; gap:0; }
   .tab{
@@ -239,14 +273,41 @@
   tbody tr:last-child td{ border-bottom:none; }
   tbody tr:hover{ background:#FBFAF6; }
 
-  .post-title{
+  .event-title{
     font-weight:500;
     color:var(--ink);
   }
-  .post-sub{
+  .event-sub{
     font-size:11.5px;
     color:#9A978C;
     margin-top:3px;
+  }
+
+  .date-badge{
+    display:flex;
+    flex-direction:column;
+    line-height:1.4;
+  }
+  .date-badge .d{ font-weight:500; }
+  .date-badge .t{ font-size:11.5px; color:#9A978C; }
+
+  .capacity{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    min-width:110px;
+  }
+  .capacity-text{ font-size:12px; color:var(--ink-soft); }
+  .capacity-bar{
+    height:5px;
+    background:var(--line);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .capacity-bar-fill{
+    height:100%;
+    background:var(--accent-deep);
+    border-radius:3px;
   }
 
   .status-badge{
@@ -256,8 +317,9 @@
     border-radius:20px;
     font-weight:500;
   }
-  .status-badge.public{ background:var(--status-public-bg); color:var(--status-public-text); }
-  .status-badge.draft{ background:var(--status-draft-bg); color:var(--status-draft-text); }
+  .status-badge.open{ background:var(--status-open-bg); color:var(--status-open-text); }
+  .status-badge.closed{ background:var(--status-closed-bg); color:var(--status-closed-text); }
+  .status-badge.ended{ background:var(--status-ended-bg); color:var(--status-ended-text); }
 
   .row-actions{
     display:flex;
@@ -314,12 +376,12 @@
     </div>
     <nav>
       <div class="nav-section-label">コンテンツ管理</div>
-      <div class="nav-item active">
+      <div class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3h10a1 1 0 0 1 1 1v16l-3-2-2 2-2-2-2 2-3-2V4a1 1 0 0 1 1-1Z"/><path d="M9 8h6M9 12h6"/></svg>
         回覧
         <span class="count">12</span>
       </div>
-      <div class="nav-item">
+      <div class="nav-item active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="15" rx="1.5"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
         イベント
         <span class="count">5</span>
@@ -342,24 +404,40 @@
   <div class="main">
     <header>
       <div>
-        <h1>回覧管理</h1>
-        <div class="desc">地域住民に配信する回覧・お知らせを管理します</div>
+        <h1>イベント管理</h1>
+        <div class="desc">地域イベントの作成・参加受付状況を管理します</div>
       </div>
       <button class="btn-primary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        新規作成
+        新規イベント作成
       </button>
     </header>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">開催予定</div>
+        <div class="stat-value">3<span>件</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">受付中の参加申込</div>
+        <div class="stat-value">86<span>名</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">今月の開催実績</div>
+        <div class="stat-value">2<span>件</span></div>
+      </div>
+    </div>
 
     <div class="toolbar">
       <div class="tabs">
         <div class="tab active">すべて</div>
-        <div class="tab">公開中</div>
-        <div class="tab">下書き</div>
+        <div class="tab">受付中</div>
+        <div class="tab">受付終了</div>
+        <div class="tab">開催終了</div>
       </div>
       <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="text" placeholder="回覧を検索">
+        <input type="text" placeholder="イベントを検索">
       </div>
     </div>
 
@@ -368,40 +446,34 @@
         <table>
           <thead>
             <tr>
-              <th style="width:44%">タイトル</th>
+              <th style="width:32%">イベント名</th>
+              <th>開催日時</th>
+              <th>会場</th>
+              <th>参加状況</th>
               <th>ステータス</th>
-              <th>公開日</th>
-              <th>閲覧数</th>
               <th style="text-align:right">操作</th>
             </tr>
           </thead>
           <tbody>
-          <tr class="clickable-row" onclick="window.location='{{ route('admin.posts.show', 1) }}'">
-            <td>
-              <div class="post-title">秋祭り開催のお知らせ</div>
-              <div class="post-sub">地域イベント</div>
-            </td>
-            <td><span class="status-badge public">公開中</span></td>
-            <td>2026/09/10</td>
-            <td>248</td>
-            <td onclick="event.stopPropagation()">
-              <div class="row-actions">
-                <div class="icon-btn" onclick="location.href='...'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                <div class="icon-btn" onclick="location.href='...'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg></div>
-                <div class="icon-btn danger" onclick="if(confirm('削除しますか？')) { /* 削除処理 */ }"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg></div>
-              </div>
-            </td>
-          </tr>
-            <tr href="{{ route('admin.posts.show', 2) }}">
+            <tr>
               <td>
-              <a class="post-title">
-                地域清掃活動のお知らせ
-              </a>
-                <div class="post-sub">お知らせ</div>
+                <div class="event-title">秋祭り2026</div>
+                <div class="event-sub">地域交流イベント</div>
               </td>
-              <td><span class="status-badge public">公開中</span></td>
-              <td>2026/09/05</td>
-              <td>176</td>
+              <td>
+                <div class="date-badge">
+                  <span class="d">2026/10/12</span>
+                  <span class="t">10:00〜16:00</span>
+                </div>
+              </td>
+              <td>名駅第一公園</td>
+              <td>
+                <div class="capacity">
+                  <span class="capacity-text">120 / 150名</span>
+                  <div class="capacity-bar"><div class="capacity-bar-fill" style="width:80%"></div></div>
+                </div>
+              </td>
+              <td><span class="status-badge open">受付中</span></td>
               <td>
                 <div class="row-actions">
                   <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
@@ -410,16 +482,25 @@
                 </div>
               </td>
             </tr>
-            <tr href="{{ route('admin.posts.show', 3) }}" >
+            <tr>
               <td>
-              <a class="post-title">
-                資源ごみ回収変更のお知らせ
-              </a>
-                <div class="post-sub">お知らせ</div>
+                <div class="event-title">町内一斉清掃</div>
+                <div class="event-sub">美化活動</div>
               </td>
-              <td><span class="status-badge public">公開中</span></td>
-              <td>2026/09/01</td>
-              <td>312</td>
+              <td>
+                <div class="date-badge">
+                  <span class="d">2026/09/20</span>
+                  <span class="t">8:00〜9:30</span>
+                </div>
+              </td>
+              <td>名駅2丁目公園周辺</td>
+              <td>
+                <div class="capacity">
+                  <span class="capacity-text">45 / 80名</span>
+                  <div class="capacity-bar"><div class="capacity-bar-fill" style="width:56%"></div></div>
+                </div>
+              </td>
+              <td><span class="status-badge open">受付中</span></td>
               <td>
                 <div class="row-actions">
                   <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
@@ -428,16 +509,52 @@
                 </div>
               </td>
             </tr>
-            <tr href="{{ route('admin.posts.show', 4) }}" >
+            <tr>
               <td>
-              <a class="post-title">
-                公演利用についてのお知らせ
-              </a>
-                <div class="post-sub">お知らせ</div>
+                <div class="event-title">防災訓練説明会</div>
+                <div class="event-sub">防災・安全</div>
               </td>
-              <td><span class="status-badge draft">下書き</span></td>
-              <td>—</td>
-              <td>—</td>
+              <td>
+                <div class="date-badge">
+                  <span class="d">2026/09/28</span>
+                  <span class="t">19:00〜20:00</span>
+                </div>
+              </td>
+              <td>中村区民会館 会議室A</td>
+              <td>
+                <div class="capacity">
+                  <span class="capacity-text">30 / 30名</span>
+                  <div class="capacity-bar"><div class="capacity-bar-fill" style="width:100%"></div></div>
+                </div>
+              </td>
+              <td><span class="status-badge closed">受付終了</span></td>
+              <td>
+                <div class="row-actions">
+                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg></div>
+                  <div class="icon-btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="event-title">夏祭り2026</div>
+                <div class="event-sub">地域交流イベント</div>
+              </td>
+              <td>
+                <div class="date-badge">
+                  <span class="d">2026/08/09</span>
+                  <span class="t">17:00〜21:00</span>
+                </div>
+              </td>
+              <td>名駅第一公園</td>
+              <td>
+                <div class="capacity">
+                  <span class="capacity-text">210 / 200名</span>
+                  <div class="capacity-bar"><div class="capacity-bar-fill" style="width:100%"></div></div>
+                </div>
+              </td>
+              <td><span class="status-badge ended">開催終了</span></td>
               <td>
                 <div class="row-actions">
                   <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
@@ -451,11 +568,10 @@
       </div>
 
       <div class="pagination">
-        <span>全12件中 1〜4件を表示</span>
+        <span>全5件中 1〜4件を表示</span>
         <div class="page-btns">
           <div class="page-btn active">1</div>
           <div class="page-btn">2</div>
-          <div class="page-btn">3</div>
         </div>
       </div>
     </div>

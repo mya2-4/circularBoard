@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>みるまち管理 - 回覧管理</title>
+<title>みるまち管理 - アンケート管理</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -17,10 +17,12 @@
     --line: #E2DFD3;
     --card: #FFFFFF;
     --danger: #A9673B;
-    --status-public-bg: #EAF1EC;
-    --status-public-text: #4E6B5A;
+    --status-open-bg: #EAF1EC;
+    --status-open-text: #4E6B5A;
     --status-draft-bg: #F1EEE6;
     --status-draft-text: #8A7A5C;
+    --status-closed-bg: #EFEBE6;
+    --status-closed-text: #9A978C;
   }
   *{box-sizing:border-box;}
   html,body{ height:100%; margin:0; }
@@ -165,11 +167,43 @@
   .btn-primary:hover{ background:var(--panel-soft); }
   .btn-primary svg{ width:15px; height:15px; }
 
+  /* Stat cards */
+  .stats-row{
+    display:flex;
+    gap:16px;
+    padding:20px 36px 0;
+  }
+  .stat-card{
+    flex:1;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 20px;
+  }
+  .stat-label{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .stat-value{
+    font-family:'Noto Serif JP', serif;
+    font-size:26px;
+    font-weight:500;
+    color:var(--ink);
+  }
+  .stat-value span{
+    font-size:13px;
+    font-family:'Noto Sans JP', sans-serif;
+    color:var(--ink-soft);
+    font-weight:400;
+    margin-left:4px;
+  }
+
   .toolbar{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:20px 36px 0;
+    padding:22px 36px 0;
   }
   .tabs{ display:flex; gap:0; }
   .tab{
@@ -239,14 +273,41 @@
   tbody tr:last-child td{ border-bottom:none; }
   tbody tr:hover{ background:#FBFAF6; }
 
-  .post-title{
+  .survey-title{
     font-weight:500;
     color:var(--ink);
   }
-  .post-sub{
+  .survey-sub{
     font-size:11.5px;
     color:#9A978C;
     margin-top:3px;
+  }
+
+  .period{
+    display:flex;
+    flex-direction:column;
+    line-height:1.4;
+    font-size:12.5px;
+  }
+  .period .end{ color:#9A978C; font-size:11.5px; margin-top:2px; }
+
+  .response-rate{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    min-width:120px;
+  }
+  .response-text{ font-size:12px; color:var(--ink-soft); }
+  .response-bar{
+    height:5px;
+    background:var(--line);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .response-bar-fill{
+    height:100%;
+    background:var(--accent-deep);
+    border-radius:3px;
   }
 
   .status-badge{
@@ -256,8 +317,9 @@
     border-radius:20px;
     font-weight:500;
   }
-  .status-badge.public{ background:var(--status-public-bg); color:var(--status-public-text); }
+  .status-badge.open{ background:var(--status-open-bg); color:var(--status-open-text); }
   .status-badge.draft{ background:var(--status-draft-bg); color:var(--status-draft-text); }
+  .status-badge.closed{ background:var(--status-closed-bg); color:var(--status-closed-text); }
 
   .row-actions{
     display:flex;
@@ -314,7 +376,7 @@
     </div>
     <nav>
       <div class="nav-section-label">コンテンツ管理</div>
-      <div class="nav-item active">
+      <div class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3h10a1 1 0 0 1 1 1v16l-3-2-2 2-2-2-2 2-3-2V4a1 1 0 0 1 1-1Z"/><path d="M9 8h6M9 12h6"/></svg>
         回覧
         <span class="count">12</span>
@@ -324,7 +386,7 @@
         イベント
         <span class="count">5</span>
       </div>
-      <div class="nav-item">
+      <div class="nav-item active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 11l2 2 4-4"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
         アンケート
         <span class="count">3</span>
@@ -342,24 +404,40 @@
   <div class="main">
     <header>
       <div>
-        <h1>回覧管理</h1>
-        <div class="desc">地域住民に配信する回覧・お知らせを管理します</div>
+        <h1>アンケート管理</h1>
+        <div class="desc">地域住民向けアンケートの作成・回答状況を管理します</div>
       </div>
       <button class="btn-primary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        新規作成
+        新規アンケート作成
       </button>
     </header>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">回答受付中</div>
+        <div class="stat-value">2<span>件</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">今月の総回答数</div>
+        <div class="stat-value">341<span>件</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">平均回答率</div>
+        <div class="stat-value">68<span>%</span></div>
+      </div>
+    </div>
 
     <div class="toolbar">
       <div class="tabs">
         <div class="tab active">すべて</div>
-        <div class="tab">公開中</div>
+        <div class="tab">受付中</div>
         <div class="tab">下書き</div>
+        <div class="tab">締切済み</div>
       </div>
       <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="text" placeholder="回覧を検索">
+        <input type="text" placeholder="アンケートを検索">
       </div>
     </div>
 
@@ -368,79 +446,88 @@
         <table>
           <thead>
             <tr>
-              <th style="width:44%">タイトル</th>
+              <th style="width:30%">タイトル</th>
+              <th>実施期間</th>
+              <th>回答状況</th>
+              <th>質問数</th>
               <th>ステータス</th>
-              <th>公開日</th>
-              <th>閲覧数</th>
               <th style="text-align:right">操作</th>
             </tr>
           </thead>
           <tbody>
-          <tr class="clickable-row" onclick="window.location='{{ route('admin.posts.show', 1) }}'">
-            <td>
-              <div class="post-title">秋祭り開催のお知らせ</div>
-              <div class="post-sub">地域イベント</div>
-            </td>
-            <td><span class="status-badge public">公開中</span></td>
-            <td>2026/09/10</td>
-            <td>248</td>
-            <td onclick="event.stopPropagation()">
-              <div class="row-actions">
-                <div class="icon-btn" onclick="location.href='...'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                <div class="icon-btn" onclick="location.href='...'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg></div>
-                <div class="icon-btn danger" onclick="if(confirm('削除しますか？')) { /* 削除処理 */ }"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg></div>
-              </div>
-            </td>
-          </tr>
-            <tr href="{{ route('admin.posts.show', 2) }}">
+            <tr>
               <td>
-              <a class="post-title">
-                地域清掃活動のお知らせ
-              </a>
-                <div class="post-sub">お知らせ</div>
+                <div class="survey-title">公園リニューアルに関するアンケート</div>
+                <div class="survey-sub">まちづくり</div>
               </td>
-              <td><span class="status-badge public">公開中</span></td>
-              <td>2026/09/05</td>
-              <td>176</td>
+              <td>
+                <div class="period">
+                  2026/09/01〜
+                  <span class="end">2026/09/30 締切</span>
+                </div>
+              </td>
+              <td>
+                <div class="response-rate">
+                  <span class="response-text">184 / 300名（61%）</span>
+                  <div class="response-bar"><div class="response-bar-fill" style="width:61%"></div></div>
+                </div>
+              </td>
+              <td>8問</td>
+              <td><span class="status-badge open">受付中</span></td>
               <td>
                 <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 17v-6a3 3 0 0 1 6 0v6M5 21h14a1 1 0 0 0 1-1V10L12 3 4 10v10a1 1 0 0 0 1 1Z"/></svg></div>
                   <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg></div>
                   <div class="icon-btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg></div>
                 </div>
               </td>
             </tr>
-            <tr href="{{ route('admin.posts.show', 3) }}" >
+            <tr>
               <td>
-              <a class="post-title">
-                資源ごみ回収変更のお知らせ
-              </a>
-                <div class="post-sub">お知らせ</div>
+                <div class="survey-title">防災意識に関するアンケート</div>
+                <div class="survey-sub">防災・安全</div>
               </td>
-              <td><span class="status-badge public">公開中</span></td>
-              <td>2026/09/01</td>
-              <td>312</td>
+              <td>
+                <div class="period">
+                  2026/09/05〜
+                  <span class="end">2026/09/25 締切</span>
+                </div>
+              </td>
+              <td>
+                <div class="response-rate">
+                  <span class="response-text">97 / 250名（39%）</span>
+                  <div class="response-bar"><div class="response-bar-fill" style="width:39%"></div></div>
+                </div>
+              </td>
+              <td>12問</td>
+              <td><span class="status-badge open">受付中</span></td>
               <td>
                 <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 17v-6a3 3 0 0 1 6 0v6M5 21h14a1 1 0 0 0 1-1V10L12 3 4 10v10a1 1 0 0 0 1 1Z"/></svg></div>
                   <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg></div>
                   <div class="icon-btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg></div>
                 </div>
               </td>
             </tr>
-            <tr href="{{ route('admin.posts.show', 4) }}" >
+            <tr>
               <td>
-              <a class="post-title">
-                公演利用についてのお知らせ
-              </a>
-                <div class="post-sub">お知らせ</div>
+                <div class="survey-title">ゴミ集積所の運用に関する意見募集</div>
+                <div class="survey-sub">生活環境</div>
               </td>
+              <td>
+                <div class="period">未設定</div>
+              </td>
+              <td>
+                <div class="response-rate">
+                  <span class="response-text">—</span>
+                  <div class="response-bar"><div class="response-bar-fill" style="width:0%"></div></div>
+                </div>
+              </td>
+              <td>6問</td>
               <td><span class="status-badge draft">下書き</span></td>
-              <td>—</td>
-              <td>—</td>
               <td>
                 <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 17v-6a3 3 0 0 1 6 0v6M5 21h14a1 1 0 0 0 1-1V10L12 3 4 10v10a1 1 0 0 0 1 1Z"/></svg></div>
                   <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg></div>
                   <div class="icon-btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg></div>
                 </div>
@@ -451,11 +538,9 @@
       </div>
 
       <div class="pagination">
-        <span>全12件中 1〜4件を表示</span>
+        <span>全3件中 1〜3件を表示</span>
         <div class="page-btns">
           <div class="page-btn active">1</div>
-          <div class="page-btn">2</div>
-          <div class="page-btn">3</div>
         </div>
       </div>
     </div>

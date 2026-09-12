@@ -36,4 +36,12 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
-Route::get('/admin', [PostController::class, 'admin']);
+Route::get('/admin', [PostController::class, 'admin'])
+    ->name('admin.posts.index');
+
+Route::get('/event', [EventController::class, 'event']);
+
+Route::get('/survey', [SurveyController::class, 'adminindex']);
+
+Route::get('/admin/posts/{post_id}', [PostController::class, 'show'])
+    ->name('admin.posts.show');

@@ -9,4 +9,8 @@ class EventController extends Controller
     public function index() {
         return view('residentsScreen.event');
     }
+
+    public function event() {
+        return view('residentsScreen.admin-event');
+    }
 }

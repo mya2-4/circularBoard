@@ -15,4 +15,8 @@ class PostController extends Controller
     public function admin() {
         return view('residentsScreen.admin');
     }
+
+    public function show($post_id) {
+        return view('residentsScreen.show', compact($post_id));
+    }
 }
