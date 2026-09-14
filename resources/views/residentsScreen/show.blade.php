@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>みるまち管理 - 回覧の閲覧状況</title>
+<title>{{ $post->title }} - みるまち</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -16,196 +16,155 @@
     --ink-soft: #5B5A52;
     --line: #E2DFD3;
     --card: #FFFFFF;
-    --danger: #A9673B;
-    --status-confirmed-bg: #EAF1EC;
-    --status-confirmed-text: #4E6B5A;
-    --status-read-bg: #EFF0EC;
-    --status-read-text: #6E7A70;
-    --status-unread-bg: #F7ECE8;
-    --status-unread-text: #A9673B;
+    --new-tag: #A9673B;
   }
   *{box-sizing:border-box;}
   html,body{ height:100%; margin:0; }
   body{
     font-family:'Noto Sans JP', sans-serif;
     background:var(--bg);
-    color:var(--ink);
   }
   .screen{ display:flex; min-height:100vh; }
 
-  /* Sidebar */
+  /* Sidebar（ホーム画面と共通） */
   .sidebar{
-    width:250px;
+    width:260px;
     flex-shrink:0;
     background:var(--panel);
     color:#EDEAE1;
     display:flex;
     flex-direction:column;
   }
-  .brand{ padding:28px 26px 22px; border-bottom:1px solid rgba(255,255,255,0.08); }
-  .brand-mark{ font-family:'Noto Serif JP', serif; font-size:22px; font-weight:700; letter-spacing:0.03em; color:#F4F1E8; }
-  .brand-sub{ margin-top:6px; font-size:10.5px; letter-spacing:0.18em; color:var(--accent); }
-  .admin-badge{
-    display:inline-block; margin-top:12px; font-size:10px; letter-spacing:0.1em;
-    color:var(--panel); background:var(--accent); padding:3px 9px; border-radius:20px; font-weight:700;
+  .brand{ padding:32px 28px 24px; border-bottom:1px solid rgba(255,255,255,0.08); }
+  .brand-mark{ font-family:'Noto Serif JP', serif; font-size:26px; font-weight:700; letter-spacing:0.04em; color:#F4F1E8; }
+  .brand-sub{ margin-top:6px; font-size:11px; letter-spacing:0.18em; color:var(--accent); }
+  .location{
+    padding:20px 28px; border-bottom:1px solid rgba(255,255,255,0.08);
+    font-size:13px; color:#C9C6BB; line-height:1.6;
   }
-  nav{ padding:14px 12px; flex:1; }
-  .nav-section-label{ font-size:10.5px; letter-spacing:0.12em; color:#7C7A6F; padding:10px 16px 6px; }
+  .location strong{ display:block; color:#EDEAE1; font-size:14px; font-weight:500; margin-bottom:2px; }
+  nav{ padding:14px 14px; flex:1; }
   .nav-item{
-    display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:8px;
-    font-size:14px; color:#CFCCC1; cursor:pointer; margin-bottom:3px;
-    transition: background 0.15s ease, color 0.15s ease; position:relative;
+    display:flex; align-items:center; gap:12px; padding:13px 16px; border-radius:8px;
+    font-size:14px; color:#CFCCC1; cursor:pointer; margin-bottom:4px;
+    transition: background 0.15s ease, color 0.15s ease; position:relative; text-decoration:none;
   }
-  .nav-item svg{ width:17px; height:17px; flex-shrink:0; opacity:0.85; }
-  .nav-item .count{ margin-left:auto; font-size:11px; color:#9C998E; }
+  .nav-item svg{ width:18px; height:18px; flex-shrink:0; opacity:0.85; }
   .nav-item.active{ background: var(--panel-soft); color:#FFFFFF; }
   .nav-item.active::before{
-    content:""; position:absolute; left:-12px; top:8px; bottom:8px; width:3px;
+    content:""; position:absolute; left:-14px; top:8px; bottom:8px; width:3px;
     background:var(--accent); border-radius:2px;
   }
   .nav-item:not(.active):hover{ color:#EDEAE1; }
-  .account{
-    padding:18px 26px 24px; border-top:1px solid rgba(255,255,255,0.08);
-    display:flex; align-items:center; gap:10px;
+  .logout{
+    padding:20px 28px 26px; border-top:1px solid rgba(255,255,255,0.08);
+    font-size:13px; color:#A9A69C; display:flex; align-items:center; gap:10px; cursor:pointer;
   }
-  .avatar{
-    width:32px; height:32px; border-radius:50%; background:var(--accent-deep); color:#F4F1E8;
-    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;
-  }
-  .account-name{ font-size:12.5px; color:#EDEAE1; }
-  .account-role{ font-size:11px; color:#9C998E; }
+  .logout svg{ width:16px; height:16px; opacity:0.8; }
 
   /* Main */
   .main{ flex:1; display:flex; flex-direction:column; min-width:0; }
   header{
-    padding:22px 36px;
-    border-bottom:1px solid var(--line);
-    background:var(--card);
-  }
-  .breadcrumb{
-    display:flex; align-items:center; gap:6px;
-    font-size:12px; color:var(--ink-soft); margin-bottom:12px;
-  }
-  .breadcrumb a{ color:var(--ink-soft); text-decoration:none; cursor:pointer; }
-  .breadcrumb a:hover{ color:var(--ink); }
-  .header-row{
-    display:flex; align-items:flex-start; justify-content:space-between;
+    padding:26px 40px;
+    display:flex; align-items:baseline; justify-content:space-between;
+    border-bottom:1px solid var(--line); background:var(--card);
   }
   header h1{
-    font-family:'Noto Serif JP', serif; font-size:20px; font-weight:500;
-    margin:0 0 6px; color:var(--ink);
+    font-family:'Noto Serif JP', serif; font-size:22px; font-weight:500; margin:0;
+    color:var(--ink); letter-spacing:0.02em;
   }
-  header .desc{ font-size:12.5px; color:var(--ink-soft); display:flex; gap:14px; }
-  .desc .status-badge{
-    font-size:11px; padding:3px 10px; border-radius:20px; background:var(--status-confirmed-bg); color:var(--status-confirmed-text); font-weight:500;
+  header .greet{ font-size:13px; color:var(--ink-soft); }
+  header .greet b{ color:var(--ink); font-weight:500; }
+
+  .content{ padding:32px 40px 60px; overflow-y:auto; }
+
+  .breadcrumb{
+    display:flex; align-items:center; gap:6px;
+    font-size:12px; color:var(--ink-soft); margin-bottom:20px;
+  }
+  .breadcrumb a{ color:var(--ink-soft); text-decoration:none; }
+  .breadcrumb a:hover{ color:var(--ink); }
+
+  .detail-card{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:36px 40px; max-width:760px;
   }
 
-  .btn-secondary{
-    display:inline-flex; align-items:center; gap:8px; padding:10px 16px;
-    background:var(--card); color:var(--ink); border:1px solid var(--line); border-radius:6px;
-    font-size:13px; font-weight:500; cursor:pointer;
+  .category-tag{
+    display:inline-block; font-size:11px; color:var(--accent-deep);
+    border:1px solid var(--accent-deep); padding:3px 10px; border-radius:20px;
+    letter-spacing:0.05em; margin-bottom:14px;
   }
-  .btn-secondary:hover{ background:#FBFAF6; }
-  .btn-secondary svg{ width:15px; height:15px; }
 
-  /* Stat cards */
-  .stats-row{ display:flex; gap:16px; padding:20px 36px 0; }
-  .stat-card{
-    flex:1; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px 20px;
+  .detail-card h2{
+    font-family:'Noto Serif JP', serif; font-size:24px; font-weight:500;
+    margin:0 0 14px; color:var(--ink); line-height:1.5;
   }
-  .stat-card.highlight{ border-color: var(--accent-deep); }
-  .stat-label{ font-size:11.5px; color:var(--ink-soft); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
-  .dot{ width:8px; height:8px; border-radius:50%; }
-  .dot.confirmed{ background:var(--status-confirmed-text); }
-  .dot.read{ background:var(--status-read-text); }
-  .dot.unread{ background:var(--status-unread-text); }
-  .stat-value{ font-family:'Noto Serif JP', serif; font-size:26px; font-weight:500; color:var(--ink); }
-  .stat-value span{ font-size:13px; font-family:'Noto Sans JP', sans-serif; color:var(--ink-soft); font-weight:400; margin-left:4px; }
 
-  /* Overall progress bar */
-  .overall-bar-wrap{ padding:18px 36px 0; }
-  .overall-bar{
-    display:flex; height:10px; border-radius:6px; overflow:hidden; background:var(--line);
+  .detail-meta{
+    display:flex; align-items:center; gap:16px;
+    font-size:12.5px; color:#9A978C; margin-bottom:28px;
+    padding-bottom:24px; border-bottom:1px solid var(--line);
   }
-  .overall-bar .seg.confirmed{ background: var(--status-confirmed-text); }
-  .overall-bar .seg.read{ background: var(--status-read-text); }
-  .overall-bar .seg.unread{ background: var(--status-unread-text); opacity:0.55; }
-  .overall-legend{
-    display:flex; gap:20px; margin-top:10px; font-size:12px; color:var(--ink-soft);
-  }
-  .overall-legend .item{ display:flex; align-items:center; gap:6px; }
 
-  .toolbar{
-    display:flex; align-items:center; justify-content:space-between; padding:22px 36px 0;
+  .read-badge{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; padding:4px 12px; border-radius:20px;
+    font-weight:700; letter-spacing:0.03em;
   }
-  .tabs{ display:flex; gap:0; }
-  .tab{
-    padding:10px 4px; margin-right:26px; font-size:13px; color:var(--ink-soft);
-    border-bottom:2px solid transparent; cursor:pointer; display:flex; align-items:center; gap:6px;
-  }
-  .tab .tab-count{ font-size:11px; color:#9A978C; }
-  .tab.active{ color:var(--ink); font-weight:700; border-bottom-color: var(--accent-deep); }
-  .tab.active .tab-count{ color:var(--ink-soft); }
+  .read-badge svg{ width:12px; height:12px; }
+  .read-badge.read{ background:#EFF0EC; color:#6E7A70; }
+  .read-badge.confirmed{ background:#EAF1EC; color:#4E6B5A; }
 
-  .search-box{
-    display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--line);
-    border-radius:6px; padding:9px 12px; width:240px;
+  .detail-body{
+    font-size:15px; line-height:2.1; color:var(--ink);
+    white-space:pre-wrap;
+    margin-bottom:32px;
   }
-  .search-box svg{ width:15px; height:15px; color:#9A978C; flex-shrink:0; }
-  .search-box input{ border:none; outline:none; font-size:13px; font-family:inherit; width:100%; color:var(--ink); background:transparent; }
-  .search-box input::placeholder{ color:#B9B6AA; }
 
-  .content{ padding:20px 36px 40px; overflow-y:auto; }
+  .image-gallery{
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;
+    margin-bottom:32px;
+  }
+  .image-gallery img{
+    width:100%; height:180px; object-fit:cover; border-radius:8px;
+    border:1px solid var(--line);
+  }
 
-  .table-card{ background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-  table{ width:100%; border-collapse:collapse; }
-  thead th{
-    text-align:left; font-size:11.5px; letter-spacing:0.04em; color:var(--ink-soft); font-weight:500;
-    padding:14px 20px; background:#FBFAF6; border-bottom:1px solid var(--line);
+  .confirm-box{
+    background:#FBFAF6; border:1px solid var(--line); border-radius:10px;
+    padding:22px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px;
   }
-  tbody td{
-    padding:14px 20px; font-size:13.5px; color:var(--ink); border-bottom:1px solid var(--line); vertical-align:middle;
+  .confirm-box .msg-title{ font-size:14px; font-weight:500; color:var(--ink); margin-bottom:4px; }
+  .confirm-box .msg-desc{ font-size:12.5px; color:var(--ink-soft); }
+  .btn-confirm{
+    flex-shrink:0;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 22px; background:var(--panel); color:#F4F1E8;
+    border:none; border-radius:6px; font-size:13.5px; font-weight:700;
+    letter-spacing:0.03em; cursor:pointer; transition: background 0.15s ease;
   }
-  tbody tr:last-child td{ border-bottom:none; }
-  tbody tr:hover{ background:#FBFAF6; }
+  .btn-confirm:hover{ background:var(--panel-soft); }
+  .btn-confirm svg{ width:15px; height:15px; }
 
-  .user-cell{ display:flex; align-items:center; gap:10px; }
-  .user-avatar{
-    width:30px; height:30px; border-radius:50%; background:var(--line); color:var(--ink-soft);
-    display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:700; flex-shrink:0;
+  .confirmed-notice{
+    display:flex; align-items:center; gap:10px;
+    background:#EAF1EC; border:1px solid #CFE0D5; border-radius:10px;
+    padding:16px 20px; font-size:13px; color:var(--accent-deep); font-weight:500;
   }
-  .user-name{ font-weight:500; }
-  .user-sub{ font-size:11.5px; color:#9A978C; margin-top:2px; }
+  .confirmed-notice svg{ width:18px; height:18px; flex-shrink:0; }
 
-  .status-badge{
-    display:inline-flex; align-items:center; gap:6px; font-size:11.5px; padding:5px 12px; border-radius:20px; font-weight:500;
+  .success-alert{
+    background:#EAF1EC; color:var(--accent-deep); border:1px solid #CFE0D5;
+    padding:12px 18px; border-radius:8px; font-size:13px; margin-bottom:20px; max-width:760px;
   }
-  .status-badge svg{ width:13px; height:13px; }
-  .status-badge.confirmed{ background:var(--status-confirmed-bg); color:var(--status-confirmed-text); }
-  .status-badge.read{ background:var(--status-read-bg); color:var(--status-read-text); }
-  .status-badge.unread{ background:var(--status-unread-bg); color:var(--status-unread-text); }
 
-  .timestamp{ font-size:12.5px; color:var(--ink-soft); }
-  .timestamp .muted{ color:#B9B6AA; }
-
-  .row-actions{ display:flex; gap:6px; justify-content:flex-end; }
-  .icon-btn{
-    width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:6px;
-    border:1px solid var(--line); background:var(--card); color:var(--ink-soft); cursor:pointer;
-    transition: background 0.15s ease, color 0.15s ease;
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top:24px; font-size:13px; color:var(--ink-soft); text-decoration:none;
   }
-  .icon-btn:hover{ background:#F1EEE6; color:var(--ink); }
-  .icon-btn svg{ width:15px; height:15px; }
-
-  .pagination{
-    display:flex; align-items:center; justify-content:space-between; padding:18px 4px 0; font-size:12.5px; color:var(--ink-soft);
-  }
-  .page-btns{ display:flex; gap:6px; }
-  .page-btn{
-    width:30px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:6px;
-    border:1px solid var(--line); background:var(--card); font-size:12.5px; color:var(--ink-soft); cursor:pointer;
-  }
-  .page-btn.active{ background:var(--panel); color:#F4F1E8; border-color:var(--panel); }
+  .back-link:hover{ color:var(--ink); }
+  .back-link svg{ width:14px; height:14px; }
 </style>
 </head>
 <body>
@@ -214,251 +173,116 @@
     <div class="brand">
       <div class="brand-mark">みるまち</div>
       <div class="brand-sub">COMMUNITY PORTAL</div>
-      <div class="admin-badge">ADMIN</div>
+    </div>
+    <div class="location">
+      <strong>名古屋市中村区</strong>
+      名駅2丁目
     </div>
     <nav>
-      <div class="nav-section-label">コンテンツ管理</div>
-      <div class="nav-item active">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3h10a1 1 0 0 1 1 1v16l-3-2-2 2-2-2-2 2-3-2V4a1 1 0 0 1 1-1Z"/><path d="M9 8h6M9 12h6"/></svg>
-        回覧
-        <span class="count">12</span>
-      </div>
-      <div class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="15" rx="1.5"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
+      <a href="{{ route('home') }}" class="nav-item {{ request()->routeIs('home') || request()->routeIs('posts.show') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M4 11.5 12 4l8 7.5"/>
+          <path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/>
+        </svg>
+        ホーム
+      </a>
+      <a href="{{ route('events.index') }}" class="nav-item {{ request()->routeIs('events.*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <rect x="3" y="5" width="18" height="15" rx="1.5"/>
+          <path d="M8 3v4M16 3v4M3 10h18"/>
+        </svg>
         イベント
-        <span class="count">5</span>
-      </div>
-      <div class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 11l2 2 4-4"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+      </a>
+      <a href="{{ route('surveys.index') }}" class="nav-item {{ request()->routeIs('surveys.*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M9 11l2 2 4-4"/>
+          <rect x="3" y="4" width="18" height="16" rx="2"/>
+        </svg>
         アンケート
-        <span class="count">3</span>
-      </div>
+      </a>
     </nav>
-    <div class="account">
-      <div class="avatar">管</div>
-      <div>
-        <div class="account-name">管理者アカウント</div>
-        <div class="account-role">中村区 事務局</div>
-      </div>
+    <div class="logout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+      ログアウト
     </div>
   </aside>
 
   <div class="main">
     <header>
-      <div class="breadcrumb">
-        <a>回覧管理</a>
-        <span>／</span>
-        <span>閲覧状況</span>
-      </div>
-      <div class="header-row">
-        <div>
-          <h1>秋祭り開催のお知らせ</h1>
-          <div class="desc">
-            公開日：2026/09/10
-            <span class="status-badge">公開中</span>
-          </div>
-        </div>
-        <button class="btn-secondary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V3m0 12-4-4m4 4 4-4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
-          CSVで出力
-        </button>
-      </div>
+      <h1>回覧の詳細</h1>
+      <div class="greet">こんにちは、<b>{{ auth()->user()->name ?? 'ゲスト' }}さん</b></div>
     </header>
 
-    <div class="stats-row">
-      <div class="stat-card highlight">
-        <div class="stat-label"><span class="dot confirmed"></span>確認済み</div>
-        <div class="stat-value">142<span>/ 248世帯</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><span class="dot read"></span>既読（未確認）</div>
-        <div class="stat-value">61<span>/ 248世帯</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><span class="dot unread"></span>未読</div>
-        <div class="stat-value">45<span>/ 248世帯</span></div>
-      </div>
-    </div>
-
-    <div class="overall-bar-wrap">
-      <div class="overall-bar">
-        <div class="seg confirmed" style="width:57%"></div>
-        <div class="seg read" style="width:25%"></div>
-        <div class="seg unread" style="width:18%"></div>
-      </div>
-      <div class="overall-legend">
-        <div class="item"><span class="dot confirmed"></span>確認済み 57%</div>
-        <div class="item"><span class="dot read"></span>既読 25%</div>
-        <div class="item"><span class="dot unread"></span>未読 18%</div>
-      </div>
-    </div>
-
-    <div class="toolbar">
-      <div class="tabs">
-        <div class="tab active">すべて <span class="tab-count">248</span></div>
-        <div class="tab">確認済み <span class="tab-count">142</span></div>
-        <div class="tab">既読 <span class="tab-count">61</span></div>
-        <div class="tab">未読 <span class="tab-count">45</span></div>
-      </div>
-      <div class="search-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="text" placeholder="世帯・氏名で検索">
-      </div>
-    </div>
-
     <div class="content">
-      <div class="table-card">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:28%">住民</th>
-              <th>世帯・地域</th>
-              <th>ステータス</th>
-              <th>既読日時</th>
-              <th>確認日時</th>
-              <th style="text-align:right">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <div class="user-avatar">近</div>
-                  <div>
-                    <div class="user-name">近藤 太郎</div>
-                    <div class="user-sub">近藤家</div>
-                  </div>
-                </div>
-              </td>
-              <td>名駅2丁目 3-15</td>
-              <td>
-                <span class="status-badge confirmed">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 13 4 4L19 7"/></svg>
-                  確認済み
-                </span>
-              </td>
-              <td class="timestamp">09/10 18:22</td>
-              <td class="timestamp">09/10 18:24</td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <div class="user-avatar">山</div>
-                  <div>
-                    <div class="user-name">山田 花子</div>
-                    <div class="user-sub">山田家</div>
-                  </div>
-                </div>
-              </td>
-              <td>名駅2丁目 3-18</td>
-              <td>
-                <span class="status-badge read">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                  既読
-                </span>
-              </td>
-              <td class="timestamp">09/11 07:05</td>
-              <td class="timestamp"><span class="muted">—</span></td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <div class="user-avatar">佐</div>
-                  <div>
-                    <div class="user-name">佐藤 一郎</div>
-                    <div class="user-sub">佐藤家</div>
-                  </div>
-                </div>
-              </td>
-              <td>名駅2丁目 4-02</td>
-              <td>
-                <span class="status-badge unread">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="m4 6 8 7 8-7"/></svg>
-                  未読
-                </span>
-              </td>
-              <td class="timestamp"><span class="muted">—</span></td>
-              <td class="timestamp"><span class="muted">—</span></td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <div class="user-avatar">鈴</div>
-                  <div>
-                    <div class="user-name">鈴木 恵子</div>
-                    <div class="user-sub">鈴木家</div>
-                  </div>
-                </div>
-              </td>
-              <td>名駅2丁目 2-09</td>
-              <td>
-                <span class="status-badge confirmed">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 13 4 4L19 7"/></svg>
-                  確認済み
-                </span>
-              </td>
-              <td class="timestamp">09/10 20:11</td>
-              <td class="timestamp">09/10 20:13</td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <div class="user-avatar">高</div>
-                  <div>
-                    <div class="user-name">高橋 誠</div>
-                    <div class="user-sub">高橋家</div>
-                  </div>
-                </div>
-              </td>
-              <td>名駅2丁目 3-21</td>
-              <td>
-                <span class="status-badge unread">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="m4 6 8 7 8-7"/></svg>
-                  未読
-                </span>
-              </td>
-              <td class="timestamp"><span class="muted">—</span></td>
-              <td class="timestamp"><span class="muted">—</span></td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="breadcrumb">
+        <a href="{{ route('home') }}">ホーム</a>
+        <span>／</span>
+        <span>{{ $post->title }}</span>
       </div>
 
-      <div class="pagination">
-        <span>全248件中 1〜5件を表示</span>
-        <div class="page-btns">
-          <div class="page-btn active">1</div>
-          <div class="page-btn">2</div>
-          <div class="page-btn">3</div>
-          <div class="page-btn">…</div>
-          <div class="page-btn">50</div>
+      @if (session('success'))
+        <div class="success-alert">{{ session('success') }}</div>
+      @endif
+
+      <div class="detail-card">
+        <span class="category-tag">{{ $post->category_label }}</span>
+
+        <h2>{{ $post->title }}</h2>
+
+        <div class="detail-meta">
+          <span>{{ $post->published_at?->format('Y年n月j日') }}</span>
+
+          @if ($readStatus === 'confirmed')
+            <span class="read-badge confirmed">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 13 4 4L19 7"/></svg>
+              確認済み
+            </span>
+          @else
+            <span class="read-badge read">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              既読
+            </span>
+          @endif
         </div>
+
+        <div class="detail-body">{{ $post->body }}</div>
+
+        @if ($post->images->isNotEmpty())
+          <div class="image-gallery">
+            @foreach ($post->images as $image)
+              <img src="{{ $image->url }}" alt="{{ $post->title }}">
+            @endforeach
+          </div>
+        @endif
+
+        @if ($post->read_mode === 'confirmation_required')
+          @if ($readStatus === 'confirmed')
+            <div class="confirmed-notice">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 13 4 4L19 7"/></svg>
+              この投稿は確認済みです
+            </div>
+          @else
+            <div class="confirm-box">
+              <div>
+                <div class="msg-title">内容を確認しましたか？</div>
+                <div class="msg-desc">確認ボタンを押すと、管理者に「確認済み」として記録されます。</div>
+              </div>
+              <form action="{{ route('posts.confirm', $post->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn-confirm">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 13 4 4L19 7"/></svg>
+                  確認しました
+                </button>
+              </form>
+            </div>
+          @endif
+        @endif
       </div>
+
+      <a href="{{ route('home') }}" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        ホームに戻る
+      </a>
     </div>
   </div>
 </div>

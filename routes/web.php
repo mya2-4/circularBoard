@@ -7,9 +7,13 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\AuthController;
 
-
+// ===== 一般利用者側 =====
 Route::get('/home', [PostController::class, 'home'])
     ->name('home');
+
+Route::get('/posts/{post}', [PostController::class, 'show'])
+    ->name('posts.show')
+    ->middleware('auth');
 
 Route::get('/events', [EventController::class, 'index'])
     ->name('events.index');
@@ -17,14 +21,23 @@ Route::get('/events', [EventController::class, 'index'])
 Route::get('/surveys', [SurveyController::class, 'index'])
     ->name('surveys.index');
 
+Route::get('/posts/{post}', [PostController::class, 'show'])
+    ->name('posts.show')
+    ->middleware('auth');
+
+Route::post('/posts/{post}/confirm', [PostController::class, 'confirm'])
+    ->name('posts.confirm')
+    ->middleware('auth');
+
 Route::get('/', function () {
-    return view('welcome');
+        return view('welcome');
 });
 
-Route::get('/login', [LoginController::class,'login'])
+// ===== 認証関連 =====
+Route::get('/login', [LoginController::class, 'login'])
     ->name('login');
 
-Route::get('/register', [LoginController::class,'register'])
+Route::get('/register', [LoginController::class, 'register'])
     ->name('register');
 
 Route::post('/register', [AuthController::class, 'register'])
@@ -36,12 +49,15 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
-Route::get('/admin', [PostController::class, 'admin'])
-    ->name('admin.posts.index');
-
+// ===== その他（要確認・後述） =====
 Route::get('/event', [EventController::class, 'event']);
-
 Route::get('/survey', [SurveyController::class, 'adminindex']);
 
-Route::get('/admin/posts/{post_id}', [PostController::class, 'show'])
-    ->name('admin.posts.show');
+// ===== 管理画面 =====
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::resource('posts', PostController::class);
+    Route::resource('events', EventController::class);
+    Route::resource('surveys', SurveyController::class);
+
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+});
