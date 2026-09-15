@@ -171,7 +171,7 @@
             <div class="card">
                 <h2 class="card-title">画像・添付ファイル</h2>
                 <label class="upload-box">
-                    <input type="file" name="images[]" accept="image/png, image/jpeg" multiple>
+                <input type="file" name="images[]" accept="image/png, image/jpeg, image/webp" multiple>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V3m0 12-4-4m4 4 4-4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
                     <div class="main-text">クリックして画像をアップロード、またはドラッグ＆ドロップ</div>
                     <div class="sub-text">JPG・PNG（最大5MB、最大4枚まで）</div>

@@ -245,51 +245,53 @@
 
   <div class="main">
     <header>
-      <div class="breadcrumb">
-        <a>回覧管理</a>
-        <span>／</span>
-        <span>閲覧状況</span>
-      </div>
-      <div class="header-row">
-        <div>
-          <h1>秋祭り開催のお知らせ</h1>
-          <div class="desc">
-            公開日：2026/09/10
-            <span class="status-badge">公開中</span>
-          </div>
+    <div class="breadcrumb">
+      <a href="{{ route('admin.posts.index') }}">回覧管理</a>
+      <span>／</span>
+      <span>閲覧状況</span>
+    </div>
+    <div class="header-row">
+      <div>
+        <h1>{{ $post->title }}</h1>
+        <div class="desc">
+          公開日：{{ $post->published_at?->format('Y/m/d') ?? '—' }}
+          <span class="status-badge">{{ $post->status === 'public' ? '公開中' : '下書き' }}</span>
         </div>
-        <button class="btn-secondary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V3m0 12-4-4m4 4 4-4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
-          CSVで出力
-        </button>
       </div>
+      ...
+    </div>
     </header>
 
     <div class="stats-row">
       <div class="stat-card highlight">
         <div class="stat-label"><span class="dot confirmed"></span>確認済み</div>
-        <div class="stat-value">142<span>/ 248世帯</span></div>
+        <div class="stat-value">{{ $confirmedCount }}<span>/ {{ $totalCount }}世帯</span></div>
       </div>
       <div class="stat-card">
         <div class="stat-label"><span class="dot read"></span>既読（未確認）</div>
-        <div class="stat-value">61<span>/ 248世帯</span></div>
+        <div class="stat-value">{{ $readCount }}<span>/ {{ $totalCount }}世帯</span></div>
       </div>
       <div class="stat-card">
         <div class="stat-label"><span class="dot unread"></span>未読</div>
-        <div class="stat-value">45<span>/ 248世帯</span></div>
+        <div class="stat-value">{{ $unreadCount }}<span>/ {{ $totalCount }}世帯</span></div>
       </div>
     </div>
 
     <div class="overall-bar-wrap">
+      @php
+        $confirmedPct = $totalCount ? round($confirmedCount / $totalCount * 100) : 0;
+        $readPct      = $totalCount ? round($readCount / $totalCount * 100) : 0;
+        $unreadPct    = $totalCount ? round($unreadCount / $totalCount * 100) : 0;
+      @endphp
       <div class="overall-bar">
-        <div class="seg confirmed" style="width:57%"></div>
-        <div class="seg read" style="width:25%"></div>
-        <div class="seg unread" style="width:18%"></div>
+        <div class="seg confirmed" style="width:{{ $confirmedPct }}%"></div>
+        <div class="seg read" style="width:{{ $readPct }}%"></div>
+        <div class="seg unread" style="width:{{ $unreadPct }}%"></div>
       </div>
       <div class="overall-legend">
-        <div class="item"><span class="dot confirmed"></span>確認済み 57%</div>
-        <div class="item"><span class="dot read"></span>既読 25%</div>
-        <div class="item"><span class="dot unread"></span>未読 18%</div>
+        <div class="item"><span class="dot confirmed"></span>確認済み {{ $confirmedPct }}%</div>
+        <div class="item"><span class="dot read"></span>既読 {{ $readPct }}%</div>
+        <div class="item"><span class="dot unread"></span>未読 {{ $unreadPct }}%</div>
       </div>
     </div>
 
@@ -320,144 +322,41 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <div class="user-avatar">近</div>
-                  <div>
-                    <div class="user-name">近藤 太郎</div>
-                    <div class="user-sub">近藤家</div>
+            @forelse ($reads as $read)
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-avatar">{{ mb_substr($read->user->name, 0, 1) }}</div>
+                    <div>
+                      <div class="user-name">{{ $read->user->name }}</div>
+                      <div class="user-sub">{{ $read->user->household_name ?? '' }}</div>
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td>名駅2丁目 3-15</td>
-              <td>
-                <span class="status-badge confirmed">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 13 4 4L19 7"/></svg>
-                  確認済み
-                </span>
-              </td>
-              <td class="timestamp">09/10 18:22</td>
-              <td class="timestamp">09/10 18:24</td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <div class="user-avatar">山</div>
-                  <div>
-                    <div class="user-name">山田 花子</div>
-                    <div class="user-sub">山田家</div>
-                  </div>
-                </div>
-              </td>
-              <td>名駅2丁目 3-18</td>
-              <td>
-                <span class="status-badge read">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                  既読
-                </span>
-              </td>
-              <td class="timestamp">09/11 07:05</td>
-              <td class="timestamp"><span class="muted">—</span></td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <div class="user-avatar">佐</div>
-                  <div>
-                    <div class="user-name">佐藤 一郎</div>
-                    <div class="user-sub">佐藤家</div>
-                  </div>
-                </div>
-              </td>
-              <td>名駅2丁目 4-02</td>
-              <td>
-                <span class="status-badge unread">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="m4 6 8 7 8-7"/></svg>
-                  未読
-                </span>
-              </td>
-              <td class="timestamp"><span class="muted">—</span></td>
-              <td class="timestamp"><span class="muted">—</span></td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <div class="user-avatar">鈴</div>
-                  <div>
-                    <div class="user-name">鈴木 恵子</div>
-                    <div class="user-sub">鈴木家</div>
-                  </div>
-                </div>
-              </td>
-              <td>名駅2丁目 2-09</td>
-              <td>
-                <span class="status-badge confirmed">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 13 4 4L19 7"/></svg>
-                  確認済み
-                </span>
-              </td>
-              <td class="timestamp">09/10 20:11</td>
-              <td class="timestamp">09/10 20:13</td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <div class="user-avatar">高</div>
-                  <div>
-                    <div class="user-name">高橋 誠</div>
-                    <div class="user-sub">高橋家</div>
-                  </div>
-                </div>
-              </td>
-              <td>名駅2丁目 3-21</td>
-              <td>
-                <span class="status-badge unread">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="m4 6 8 7 8-7"/></svg>
-                  未読
-                </span>
-              </td>
-              <td class="timestamp"><span class="muted">—</span></td>
-              <td class="timestamp"><span class="muted">—</span></td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                </div>
-              </td>
-            </tr>
+                </td>
+                <td>{{ $read->user->address ?? '—' }}</td>
+                <td>
+                  @if ($read->status === 'confirmed')
+                    <span class="status-badge confirmed">確認済み</span>
+                  @elseif ($read->status === 'read')
+                    <span class="status-badge read">既読</span>
+                  @else
+                    <span class="status-badge unread">未読</span>
+                  @endif
+                </td>
+                <td class="timestamp">{{ $read->read_at?->format('m/d H:i') ?? '—' }}</td>
+                <td class="timestamp">{{ $read->confirmed_at?->format('m/d H:i') ?? '—' }}</td>
+                <td><div class="row-actions">...</div></td>
+              </tr>
+            @empty
+              <tr><td colspan="6" style="text-align:center; color:var(--ink-soft); padding:40px 0;">閲覧記録がありません</td></tr>
+            @endforelse
           </tbody>
         </table>
       </div>
 
       <div class="pagination">
-        <span>全248件中 1〜5件を表示</span>
-        <div class="page-btns">
-          <div class="page-btn active">1</div>
-          <div class="page-btn">2</div>
-          <div class="page-btn">3</div>
-          <div class="page-btn">…</div>
-          <div class="page-btn">50</div>
-        </div>
+        <span>全{{ $reads->total() }}件中 {{ $reads->firstItem() }}〜{{ $reads->lastItem() }}件を表示</span>
+        {{ $reads->links() }}
       </div>
     </div>
   </div>

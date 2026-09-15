@@ -173,30 +173,19 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
-        $userId = auth()->id();
-
-        $read = \App\Models\PostRead::firstOrCreate(
-            ['post_id' => $post->id, 'user_id' => $userId],
-            ['status' => 'unread']
+        $read = $post->reads()->firstOrCreate(
+            ['user_id' => auth()->id()],
+            ['status' => 'read']
         );
 
-        // まだ未読なら「既読」にする（閲覧数もここでカウント）
+        // すでに存在していて、まだ 'unread' のままなら 'read' に更新（必要な場合）
         if ($read->status === 'unread') {
-            $read->update([
-                'status'  => 'read',
-                'read_at' => now(),
-            ]);
-
-            $post->increment('views_count');
+            $read->update(['status' => 'read']);
         }
 
-        $post->load('images');
-        $readStatus = $read->fresh()->status; // unread はこの時点であり得ない（read か confirmed）
+        $readStatus = $read->status;
 
-        return view('residentsScreen.show', [
-            'post'       => $post,
-            'readStatus' => $readStatus,
-        ]);
+        return view('residentsScreen.show', compact('post', 'readStatus'));
     }
 
     public function confirm(Post $post)

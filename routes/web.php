@@ -2,10 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\AuthController;
+
 
 // ===== 一般利用者側 =====
 Route::get('/home', [PostController::class, 'home'])
@@ -55,9 +57,11 @@ Route::get('/survey', [SurveyController::class, 'adminindex']);
 
 // ===== 管理画面 =====
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    Route::resource('posts', PostController::class);
+    Route::resource('posts', AdminPostController::class);
     Route::resource('events', EventController::class);
     Route::resource('surveys', SurveyController::class);
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+    
 });
