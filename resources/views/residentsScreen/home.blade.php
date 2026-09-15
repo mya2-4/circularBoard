@@ -291,7 +291,9 @@
       <div class="greet">こんにちは、<b>{{ auth()->user()->name ?? 'ゲスト' }}さん</b></div>
     </header>
     <div class="tabs">
-      <a href="{{ route('home') }}" class="tab active">新着回覧</a>
+      <a href="{{ route('home') }}" class="tab {{ request('view') === null ? 'active' : '' }}">すべて</a>
+      <a href="{{ route('home', ['view' => 'confirmed']) }}" class="tab {{ request('view') === 'confirmed' ? 'active' : '' }}">既読・確認済み</a>
+      <a href="{{ route('home', ['view' => 'unread']) }}" class="tab {{ request('view') === 'unread' ? 'active' : '' }}">未読</a>
     </div>
     <div class="content">
         @forelse ($posts as $post)

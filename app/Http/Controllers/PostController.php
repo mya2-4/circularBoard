@@ -9,8 +9,7 @@ use App\Models\Region;
 
 class PostController extends Controller
 {
-    public function home()
-    {
+    public function home(Request $request) {
         $userId = auth()->id();
 
         $posts = Post::query()
@@ -23,6 +22,15 @@ class PostController extends Controller
                 $post->read_status = $read->status ?? 'unread';
                 return $post;
             });
+
+        $view = $request->query('view');
+
+        if ($view === 'unread') {
+            $posts = $posts->where('read_status', 'unread');
+        } elseif ($view === 'confirmed') {
+            $posts = $posts->whereIn('read_status', ['read', 'confirmed']);
+        }
+        // $view が null（すべて）の場合はフィルタなし
 
         return view('residentsScreen.home', compact('posts'));
     }
