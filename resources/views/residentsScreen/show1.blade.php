@@ -297,10 +297,18 @@
 
     <div class="toolbar">
       <div class="tabs">
-        <div class="tab active">すべて <span class="tab-count">248</span></div>
-        <div class="tab">確認済み <span class="tab-count">142</span></div>
-        <div class="tab">既読 <span class="tab-count">61</span></div>
-        <div class="tab">未読 <span class="tab-count">45</span></div>
+        <a href="{{ route('admin.posts.show', $post->id) }}" class="tab {{ request('status') === null ? 'active' : '' }}">
+          すべて <span class="tab-count">{{ $totalCount }}</span>
+        </a>
+        <a href="{{ route('admin.posts.show', ['post' => $post->id, 'status' => 'confirmed']) }}" class="tab {{ request('status') === 'confirmed' ? 'active' : '' }}">
+          確認済み <span class="tab-count">{{ $confirmedCount }}</span>
+        </a>
+        <a href="{{ route('admin.posts.show', ['post' => $post->id, 'status' => 'read']) }}" class="tab {{ request('status') === 'read' ? 'active' : '' }}">
+          既読 <span class="tab-count">{{ $readCount }}</span>
+        </a>
+        <a href="{{ route('admin.posts.show', ['post' => $post->id, 'status' => 'unread']) }}" class="tab {{ request('status') === 'unread' ? 'active' : '' }}">
+          未読 <span class="tab-count">{{ $unreadCount }}</span>
+        </a>
       </div>
       <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -326,29 +334,46 @@
               <tr>
                 <td>
                   <div class="user-cell">
-                    <div class="user-avatar">{{ mb_substr($read->user->name, 0, 1) }}</div>
+                    <div class="user-avatar">{{ mb_substr($read->user->last_name ?? $read->user->name, 0, 1) }}</div>
                     <div>
-                      <div class="user-name">{{ $read->user->name }}</div>
-                      <div class="user-sub">{{ $read->user->household_name ?? '' }}</div>
+                      <div class="user-name">{{ $read->user->last_name }} {{ $read->user->first_name }}</div>
+                      <div class="user-sub">{{ $read->user->region2 }}</div>
                     </div>
                   </div>
                 </td>
-                <td>{{ $read->user->address ?? '—' }}</td>
+                <td>{{ $read->user->region }}</td>
                 <td>
                   @if ($read->status === 'confirmed')
-                    <span class="status-badge confirmed">確認済み</span>
+                    <span class="status-badge confirmed">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 13 4 4L19 7"/></svg>
+                      確認済み
+                    </span>
                   @elseif ($read->status === 'read')
-                    <span class="status-badge read">既読</span>
+                    <span class="status-badge read">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                      既読
+                    </span>
                   @else
-                    <span class="status-badge unread">未読</span>
+                    <span class="status-badge unread">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="m4 6 8 7 8-7"/></svg>
+                      未読
+                    </span>
                   @endif
                 </td>
                 <td class="timestamp">{{ $read->read_at?->format('m/d H:i') ?? '—' }}</td>
                 <td class="timestamp">{{ $read->confirmed_at?->format('m/d H:i') ?? '—' }}</td>
-                <td><div class="row-actions">...</div></td>
+                <td>
+                  <div class="row-actions">
+                    <div class="icon-btn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                  </div>
+                </td>
               </tr>
             @empty
-              <tr><td colspan="6" style="text-align:center; color:var(--ink-soft); padding:40px 0;">閲覧記録がありません</td></tr>
+              <tr>
+                <td colspan="6" style="text-align:center; color:var(--ink-soft); padding:40px 0;">閲覧記録がありません</td>
+              </tr>
             @endforelse
           </tbody>
         </table>

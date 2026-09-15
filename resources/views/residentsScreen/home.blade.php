@@ -292,7 +292,6 @@
     </header>
     <div class="tabs">
       <a href="{{ route('home') }}" class="tab active">新着回覧</a>
-      <a href="{{ route('home', ['view' => 'past']) }}" class="tab">過去の回覧</a>
     </div>
     <div class="content">
         @forelse ($posts as $post)
