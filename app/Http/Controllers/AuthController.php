@@ -49,7 +49,7 @@ class AuthController extends Controller
     Auth::login($user);
 
     if ($user->role === 1) {
-        return redirect()->route('residentsScreen.admin');
+        return redirect()->route('admin.posts.index');
     }
 
     return redirect('/home');

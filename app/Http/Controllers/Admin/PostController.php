@@ -9,52 +9,135 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-  public function show(Request $request, Post $post) {
-      $query = $post->reads()->with('user');
-  
-      if ($request->filled('status')) {
-          $query->where('status', $request->query('status'));
-      }
-  
-      $reads = $query->latest('updated_at')->paginate(15)->withQueryString();
-  
-      $confirmedCount = $post->confirmed_count;
-      $readCount      = $post->read_count;
-      $unreadCount    = $post->unread_count;
-      $totalCount     = $confirmedCount + $readCount + $unreadCount;
-  
-      return view('residentsScreen.show1', compact(
-          'post', 'reads', 'confirmedCount', 'readCount', 'unreadCount', 'totalCount'
-      ));
-  }
+    /**
+     * 回覧一覧（管理画面）
+     */
+    public function index(Request $request)
+    {
+        $query = Post::query();
 
-  public function store(Request $request) {
-      $validated = $request->validate([
-          'title'         => 'required|string|max:255',
-          'category'      => 'nullable|string|max:100',
-          'summary'       => 'nullable|string',
-          'body'          => 'required|string',
-          'status'        => 'required|in:public,draft',
-          'read_mode'     => 'nullable|string',
-          'send_reminder' => 'nullable|boolean',
-      ]);
+        if ($request->filled('status')) {
+            $query->where('status', $request->query('status'));
+        }
 
-      $validated['created_by'] = auth()->id();
+        if ($request->filled('q')) {
+            $query->where('title', 'like', '%' . $request->query('q') . '%');
+        }
 
-      $post = Post::create($validated);
+        $posts = $query->orderByDesc('published_at')->paginate(15)->withQueryString();
 
-      if ($post->status === 'public') {
-          $post->update(['published_at' => now()]);
-      }
+        return view('residentsScreen.admin', compact('posts'));
+    }
 
-      // 全住民に対して未読レコードを作成
-      $userIds = User::pluck('id');
-      $post->reads()->createMany(
-          $userIds->map(fn ($id) => ['user_id' => $id, 'status' => 'unread'])->toArray()
-      );
+    /**
+     * 新規作成フォーム
+     */
+    public function create()
+    {
+        return view('admin.posts.create');
+    }
 
-      return redirect()
-          ->route('admin.posts.show', $post->id)
-          ->with('success', '投稿を作成しました');
-  }
+    /**
+     * 保存
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title'         => 'required|string|max:255',
+            'category'      => 'nullable|string|max:100',
+            'summary'       => 'nullable|string',
+            'body'          => 'required|string',
+            'status'        => 'required|in:public,draft',
+            'read_mode'     => 'nullable|string',
+            'send_reminder' => 'nullable|boolean',
+        ]);
+
+        $validated['created_by'] = auth()->id();
+
+        $post = Post::create($validated);
+
+        if ($post->status === 'public') {
+            $post->update(['published_at' => now()]);
+        }
+
+        $userIds = User::pluck('id');
+        $post->reads()->createMany(
+            $userIds->map(fn ($id) => ['user_id' => $id, 'status' => 'unread'])->toArray()
+        );
+
+        return redirect()
+            ->route('admin.posts.show', $post->id)
+            ->with('success', '投稿を作成しました');
+    }
+
+    /**
+     * 詳細（閲覧状況）
+     */
+    public function show(Request $request, Post $post)
+    {
+        $query = $post->reads()->with('user');
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->query('status'));
+        }
+
+        $reads = $query->latest('updated_at')->paginate(15)->withQueryString();
+
+        $confirmedCount = $post->confirmed_count;
+        $readCount      = $post->read_count;
+        $unreadCount    = $post->unread_count;
+        $totalCount     = $confirmedCount + $readCount + $unreadCount;
+
+        return view('residentsScreen.show1', compact(
+            'post', 'reads', 'confirmedCount', 'readCount', 'unreadCount', 'totalCount'
+        ));
+    }
+
+    /**
+     * 編集フォーム
+     */
+    public function edit(Post $post)
+    {
+        return view('admin.posts.edit', compact('post'));
+    }
+
+    /**
+     * 更新
+     */
+    public function update(Request $request, Post $post)
+    {
+        $validated = $request->validate([
+            'title'         => 'required|string|max:255',
+            'category'      => 'nullable|string|max:100',
+            'summary'       => 'nullable|string',
+            'body'          => 'required|string',
+            'status'        => 'required|in:public,draft',
+            'read_mode'     => 'nullable|string',
+            'send_reminder' => 'nullable|boolean',
+        ]);
+
+        $wasNotPublic = $post->status !== 'public';
+
+        $post->update($validated);
+
+        if ($wasNotPublic && $post->status === 'public') {
+            $post->update(['published_at' => now()]);
+        }
+
+        return redirect()
+            ->route('admin.posts.index')
+            ->with('success', '投稿を更新しました');
+    }
+
+    /**
+     * 削除
+     */
+    public function destroy(Post $post)
+    {
+        $post->delete();
+
+        return redirect()
+            ->route('admin.posts.index')
+            ->with('success', '投稿を削除しました');
+    }
 }

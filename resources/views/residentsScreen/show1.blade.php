@@ -206,6 +206,13 @@
     border:1px solid var(--line); background:var(--card); font-size:12.5px; color:var(--ink-soft); cursor:pointer;
   }
   .page-btn.active{ background:var(--panel); color:#F4F1E8; border-color:var(--panel); }
+
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top:24px; font-size:13px; color:var(--ink-soft); text-decoration:none;
+  }
+  .back-link:hover{ color:var(--ink); }
+  .back-link svg{ width:14px; height:14px; }
 </style>
 </head>
 <body>
@@ -383,6 +390,10 @@
         <span>全{{ $reads->total() }}件中 {{ $reads->firstItem() }}〜{{ $reads->lastItem() }}件を表示</span>
         {{ $reads->links() }}
       </div>
+      <a href="{{ route('admin.posts.index') }}" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        ホームに戻る
+      </a>
     </div>
   </div>
 </div>
