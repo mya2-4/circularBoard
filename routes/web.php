@@ -33,6 +33,14 @@ Route::post('/posts/{post}/confirm', [PostController::class, 'confirm'])
     ->name('posts.confirm')
     ->middleware('auth');
 
+Route::get('/events/{event}', [EventController::class, 'show'])
+    ->name('events.show')
+    ->middleware('auth');
+
+Route::post('/events/{event}/participate', [EventController::class, 'participate'])
+    ->name('events.participate')
+    ->middleware('auth');
+
 Route::get('/', function () {
         return view('welcome');
 });
@@ -64,6 +72,4 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('surveys', AdminSurveyController::class);
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-
-    
 });
