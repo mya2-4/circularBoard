@@ -248,7 +248,7 @@
               </td>
               <td>
                 <div class="row-actions">
-                  <a class="icon-btn" href="{{ route('admin.surveys.show', $survey->id) }}" title="回答状況">
+                <a class="icon-btn" href="{{ route('admin.surveys.show', $survey->id) }}" title="回答状況">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 17v-6a3 3 0 0 1 6 0v6M5 21h14a1 1 0 0 0 1-1V10L12 3 4 10v10a1 1 0 0 0 1 1Z"/></svg>
                   </a>
                   <a class="icon-btn" href="{{ route('admin.surveys.edit', $survey->id) }}" title="編集">

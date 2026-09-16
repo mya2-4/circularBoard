@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyQuestionOption;
+use App\Models\SurveyAnswer;
 use Illuminate\Support\Facades\DB;
 
 class surveyController extends Controller
@@ -108,5 +109,36 @@ public function index(Request $request)
         return redirect()
             ->route('admin.surveys.index')
             ->with('success', 'アンケートを作成しました');
+    }
+
+    public function show(Survey $survey)
+    {
+        $survey->load([
+            'questions' => fn ($q) => $q->orderBy('sort_order'),
+            'questions.options' => fn ($q) => $q->withCount('selections')->orderBy('sort_order'),
+        ]);
+
+        $responsesCount = $survey->responses()->count();
+
+        $textAnswers = SurveyAnswer::whereHas('question', function ($q) use ($survey) {
+                $q->where('survey_id', $survey->id)->where('type', 'text');
+            })
+            ->whereNotNull('answer_text')
+            ->where('answer_text', '!=', '')
+            ->with('question')
+            ->latest()
+            ->get()
+            ->groupBy('survey_question_id');
+
+        return view('residentsScreen.admin.survey.show', compact('survey', 'responsesCount', 'textAnswers'));
+    }
+
+    public function destroy(Survey $survey)
+    {
+        $survey->delete();
+
+        return redirect()
+            ->route('admin.surveys.index')
+            ->with('success', 'アンケートを削除しました');
     }
 }
