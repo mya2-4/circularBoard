@@ -35,6 +35,9 @@ class Survey extends Model
 
     public function getResponsesCountAttribute(): int
     {
+        if (array_key_exists('responses_count', $this->attributes)) {
+            return (int) $this->attributes['responses_count'];
+        }
         return $this->responses()->count();
     }
 

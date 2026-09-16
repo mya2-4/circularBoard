@@ -41,6 +41,14 @@ Route::post('/events/{event}/participate', [EventController::class, 'participate
     ->name('events.participate')
     ->middleware('auth');
 
+Route::get('/surveys/{survey}', [SurveyController::class, 'show'])
+    ->name('surveys.show')
+    ->middleware('auth');
+
+Route::post('/surveys/{survey}', [SurveyController::class, 'store'])
+    ->name('surveys.store')
+    ->middleware('auth');
+
 Route::get('/', function () {
         return view('welcome');
 });
