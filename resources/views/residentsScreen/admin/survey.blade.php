@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>みるまち管理 - イベント管理</title>
+<title>みるまち管理 - アンケート管理</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -19,10 +19,10 @@
     --danger: #A9673B;
     --status-open-bg: #EAF1EC;
     --status-open-text: #4E6B5A;
-    --status-closed-bg: #F1EEE6;
-    --status-closed-text: #8A7A5C;
-    --status-ended-bg: #EFEBE6;
-    --status-ended-text: #9A978C;
+    --status-draft-bg: #F1EEE6;
+    --status-draft-text: #8A7A5C;
+    --status-closed-bg: #EFEBE6;
+    --status-closed-text: #9A978C;
   }
   *{box-sizing:border-box;}
   html,body{ height:100%; margin:0; }
@@ -273,38 +273,38 @@
   tbody tr:last-child td{ border-bottom:none; }
   tbody tr:hover{ background:#FBFAF6; }
 
-  .event-title{
+  .survey-title{
     font-weight:500;
     color:var(--ink);
   }
-  .event-sub{
+  .survey-sub{
     font-size:11.5px;
     color:#9A978C;
     margin-top:3px;
   }
 
-  .date-badge{
+  .period{
     display:flex;
     flex-direction:column;
     line-height:1.4;
+    font-size:12.5px;
   }
-  .date-badge .d{ font-weight:500; }
-  .date-badge .t{ font-size:11.5px; color:#9A978C; }
+  .period .end{ color:#9A978C; font-size:11.5px; margin-top:2px; }
 
-  .capacity{
+  .response-rate{
     display:flex;
     flex-direction:column;
     gap:6px;
-    min-width:110px;
+    min-width:120px;
   }
-  .capacity-text{ font-size:12px; color:var(--ink-soft); }
-  .capacity-bar{
+  .response-text{ font-size:12px; color:var(--ink-soft); }
+  .response-bar{
     height:5px;
     background:var(--line);
     border-radius:3px;
     overflow:hidden;
   }
-  .capacity-bar-fill{
+  .response-bar-fill{
     height:100%;
     background:var(--accent-deep);
     border-radius:3px;
@@ -318,8 +318,8 @@
     font-weight:500;
   }
   .status-badge.open{ background:var(--status-open-bg); color:var(--status-open-text); }
+  .status-badge.draft{ background:var(--status-draft-bg); color:var(--status-draft-text); }
   .status-badge.closed{ background:var(--status-closed-bg); color:var(--status-closed-text); }
-  .status-badge.ended{ background:var(--status-ended-bg); color:var(--status-ended-text); }
 
   .row-actions{
     display:flex;
@@ -381,12 +381,12 @@
         回覧
         <span class="count">12</span>
       </div>
-      <div class="nav-item active">
+      <div class="nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="15" rx="1.5"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>
         イベント
         <span class="count">5</span>
       </div>
-      <div class="nav-item">
+      <div class="nav-item active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 11l2 2 4-4"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
         アンケート
         <span class="count">3</span>
@@ -404,40 +404,40 @@
   <div class="main">
     <header>
       <div>
-        <h1>イベント管理</h1>
-        <div class="desc">地域イベントの作成・参加受付状況を管理します</div>
+        <h1>アンケート管理</h1>
+        <div class="desc">地域住民向けアンケートの作成・回答状況を管理します</div>
       </div>
       <button class="btn-primary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        新規イベント作成
+        新規アンケート作成
       </button>
     </header>
 
     <div class="stats-row">
       <div class="stat-card">
-        <div class="stat-label">開催予定</div>
-        <div class="stat-value">3<span>件</span></div>
+        <div class="stat-label">回答受付中</div>
+        <div class="stat-value">{{ $openCount }}<span>件</span></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">受付中の参加申込</div>
-        <div class="stat-value">86<span>名</span></div>
+        <div class="stat-label">今月の総回答数</div>
+        <div class="stat-value">{{ $thisMonthResponsesCount }}<span>件</span></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">今月の開催実績</div>
-        <div class="stat-value">2<span>件</span></div>
+        <div class="stat-label">平均回答率</div>
+        <div class="stat-value">{{ $avgResponseRate !== null ? round($avgResponseRate) : '—' }}<span>%</span></div>
       </div>
     </div>
 
     <div class="toolbar">
       <div class="tabs">
-        <div class="tab active">すべて</div>
-        <div class="tab">受付中</div>
-        <div class="tab">受付終了</div>
-        <div class="tab">開催終了</div>
+        <a href="{{ route('admin.surveys.index') }}" class="tab {{ request('status') === null ? 'active' : '' }}">すべて</a>
+        <a href="{{ route('admin.surveys.index', ['status' => 'open']) }}" class="tab {{ request('status') === 'open' ? 'active' : '' }}">受付中</a>
+        <a href="{{ route('admin.surveys.index', ['status' => 'draft']) }}" class="tab {{ request('status') === 'draft' ? 'active' : '' }}">下書き</a>
+        <a href="{{ route('admin.surveys.index', ['status' => 'closed']) }}" class="tab {{ request('status') === 'closed' ? 'active' : '' }}">締切済み</a>
       </div>
       <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="text" placeholder="イベントを検索">
+        <input type="text" placeholder="アンケートを検索">
       </div>
     </div>
 
@@ -446,133 +446,73 @@
         <table>
           <thead>
             <tr>
-              <th style="width:32%">イベント名</th>
-              <th>開催日時</th>
-              <th>会場</th>
-              <th>参加状況</th>
+              <th style="width:30%">タイトル</th>
+              <th>実施期間</th>
+              <th>回答状況</th>
+              <th>質問数</th>
               <th>ステータス</th>
               <th style="text-align:right">操作</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>
-                <div class="event-title">秋祭り2026</div>
-                <div class="event-sub">地域交流イベント</div>
-              </td>
-              <td>
-                <div class="date-badge">
-                  <span class="d">2026/10/12</span>
-                  <span class="t">10:00〜16:00</span>
-                </div>
-              </td>
-              <td>名駅第一公園</td>
-              <td>
-                <div class="capacity">
-                  <span class="capacity-text">120 / 150名</span>
-                  <div class="capacity-bar"><div class="capacity-bar-fill" style="width:80%"></div></div>
-                </div>
-              </td>
-              <td><span class="status-badge open">受付中</span></td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg></div>
-                  <div class="icon-btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="event-title">町内一斉清掃</div>
-                <div class="event-sub">美化活動</div>
-              </td>
-              <td>
-                <div class="date-badge">
-                  <span class="d">2026/09/20</span>
-                  <span class="t">8:00〜9:30</span>
-                </div>
-              </td>
-              <td>名駅2丁目公園周辺</td>
-              <td>
-                <div class="capacity">
-                  <span class="capacity-text">45 / 80名</span>
-                  <div class="capacity-bar"><div class="capacity-bar-fill" style="width:56%"></div></div>
-                </div>
-              </td>
-              <td><span class="status-badge open">受付中</span></td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg></div>
-                  <div class="icon-btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="event-title">防災訓練説明会</div>
-                <div class="event-sub">防災・安全</div>
-              </td>
-              <td>
-                <div class="date-badge">
-                  <span class="d">2026/09/28</span>
-                  <span class="t">19:00〜20:00</span>
-                </div>
-              </td>
-              <td>中村区民会館 会議室A</td>
-              <td>
-                <div class="capacity">
-                  <span class="capacity-text">30 / 30名</span>
-                  <div class="capacity-bar"><div class="capacity-bar-fill" style="width:100%"></div></div>
-                </div>
-              </td>
-              <td><span class="status-badge closed">受付終了</span></td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg></div>
-                  <div class="icon-btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="event-title">夏祭り2026</div>
-                <div class="event-sub">地域交流イベント</div>
-              </td>
-              <td>
-                <div class="date-badge">
-                  <span class="d">2026/08/09</span>
-                  <span class="t">17:00〜21:00</span>
-                </div>
-              </td>
-              <td>名駅第一公園</td>
-              <td>
-                <div class="capacity">
-                  <span class="capacity-text">210 / 200名</span>
-                  <div class="capacity-bar"><div class="capacity-bar-fill" style="width:100%"></div></div>
-                </div>
-              </td>
-              <td><span class="status-badge ended">開催終了</span></td>
-              <td>
-                <div class="row-actions">
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                  <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg></div>
-                  <div class="icon-btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg></div>
-                </div>
-              </td>
-            </tr>
+            @forelse ($surveys as $survey)
+              <tr>
+                <td>
+                  <div class="survey-title">{{ $survey->title }}</div>
+                  <div class="survey-sub">{{ $survey->category }}</div>
+                </td>
+                <td>
+                  <div class="period">
+                    @if ($survey->starts_at)
+                      {{ $survey->starts_at->format('Y/m/d') }}〜
+                      <span class="end">{{ $survey->ends_at?->format('Y/m/d') }} 締切</span>
+                    @else
+                      未設定
+                    @endif
+                  </div>
+                </td>
+                <td>
+                  <div class="response-rate">
+                    @if ($survey->target_count)
+                      <span class="response-text">{{ $survey->responses_count }} / {{ $survey->target_count }}名（{{ $survey->response_rate }}%）</span>
+                      <div class="response-bar"><div class="response-bar-fill" style="width:{{ $survey->response_rate }}%"></div></div>
+                    @else
+                      <span class="response-text">—</span>
+                      <div class="response-bar"><div class="response-bar-fill" style="width:0%"></div></div>
+                    @endif
+                  </div>
+                </td>
+                <td>{{ $survey->questions_count }}問</td>
+                <td>
+                  @if ($survey->status === 'open')
+                    <span class="status-badge open">受付中</span>
+                  @elseif ($survey->status === 'draft')
+                    <span class="status-badge draft">下書き</span>
+                  @else
+                    <span class="status-badge closed">締切済み</span>
+                  @endif
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <a class="icon-btn" href="{{ route('admin.surveys.show', $survey->id) }}" title="回答状況">...</a>
+                    <a class="icon-btn" href="{{ route('admin.surveys.edit', $survey->id) }}" title="編集">...</a>
+                    <form action="{{ route('admin.surveys.destroy', $survey->id) }}" method="POST" onsubmit="return confirm('このアンケートを削除しますか？');">
+                      @csrf @method('DELETE')
+                      <button type="submit" class="icon-btn danger" title="削除">...</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            @empty
+              <tr><td colspan="6" style="text-align:center; color:var(--ink-soft); padding:40px 0;">アンケートがありません</td></tr>
+            @endforelse
           </tbody>
         </table>
       </div>
 
       <div class="pagination">
-        <span>全5件中 1〜4件を表示</span>
-        <div class="page-btns">
-          <div class="page-btn active">1</div>
-          <div class="page-btn">2</div>
-        </div>
+        <span>全{{ $surveys->total() }}件中 {{ $surveys->firstItem() }}〜{{ $surveys->lastItem() }}件を表示</span>
+        {{ $surveys->links() }}
       </div>
     </div>
   </div>

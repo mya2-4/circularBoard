@@ -2,10 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\Admin\PostController as AdminPostController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
+use App\Http\Controllers\Admin\SurveyController as AdminSurveyController;
 use App\Http\Controllers\AuthController;
 
 
@@ -58,8 +60,8 @@ Route::get('/survey', [SurveyController::class, 'adminindex']);
 // ===== 管理画面 =====
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::resource('posts', AdminPostController::class);
-    Route::resource('events', EventController::class);
-    Route::resource('surveys', SurveyController::class);
+    Route::resource('events', AdminEventController::class);
+    Route::resource('surveys', AdminSurveyController::class);
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 

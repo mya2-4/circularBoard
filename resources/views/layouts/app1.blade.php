@@ -382,7 +382,7 @@
                 </svg>
 
                 イベント
-                <span class="count">{{ $eventsCount ?? '' }}</span>
+                <span class="count">{{ $upcomingCount ?? '' }}</span>
             </a>
 
 
