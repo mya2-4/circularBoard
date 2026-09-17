@@ -107,6 +107,13 @@
     font-size:12.5px;
     color:var(--ink-soft);
   }
+
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top:24px; font-size:13px; color:var(--ink-soft); text-decoration:none;
+  }
+  .back-link:hover{ color:var(--ink); }
+  .back-link svg{ width:14px; height:14px; }
 </style>
 @endpush
 
@@ -165,6 +172,11 @@
         </tbody>
       </table>
     </div>
+
+    <a href="{{ route('admin.events.index') }}" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      イベント管理に戻る
+    </a>
 
     <div class="pagination">
       <span>全{{ $participants->total() }}件中 {{ $participants->firstItem() }}〜{{ $participants->lastItem() }}件を表示</span>

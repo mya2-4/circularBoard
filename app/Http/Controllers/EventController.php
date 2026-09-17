@@ -59,4 +59,15 @@ class EventController extends Controller
         ->route('events.show', $event->id)
         ->with('success', '参加申込が完了しました');
     }
+
+    public function show(Event $event)
+    {
+        $event->loadSum('participants', 'participant_count');
+
+        $myParticipation = $event->participants()
+            ->where('user_id', auth()->id())
+            ->first();
+
+        return view('residentsScreen.event-show', compact('event', 'myParticipation'));
+    }
 }

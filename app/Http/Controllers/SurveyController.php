@@ -92,4 +92,19 @@ class SurveyController extends Controller
             ->route('surveys.index')
             ->with('success', '回答ありがとうございました');
     }
+
+    public function show(Survey $survey)
+    {
+        if ($survey->status !== 'open') {
+            abort(404);
+        }
+
+        $survey->load(['questions.options']);
+
+        $alreadyAnswered = $survey->responses()
+            ->where('user_id', auth()->id())
+            ->exists();
+
+        return view('residentsScreen.survey-show', compact('survey', 'alreadyAnswered'));
+    }
 }

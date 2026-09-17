@@ -142,6 +142,13 @@
     font-size:12.5px;
     color:var(--ink-soft);
   }
+
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top:24px; font-size:13px; color:var(--ink-soft); text-decoration:none;
+  }
+  .back-link:hover{ color:var(--ink); }
+  .back-link svg{ width:14px; height:14px; }
 </style>
 @endpush
 
@@ -184,7 +191,7 @@
         </thead>
         <tbody>
           @forelse ($surveys as $survey)
-            <tr>
+            <tr class="clickable-row" onclick="window.location='{{ route('admin.surveys.show', $survey->id) }}'">
               <td>
                 <div class="survey-title">{{ $survey->title }}</div>
                 <div class="survey-sub">{{ $survey->category }}</div>
@@ -214,12 +221,17 @@
               <td>
                 @if ($survey->status === 'open')
                   <span class="status-badge open">受付中</span>
-                @else ($survey->status === 'draft')
+                @elseif ($survey->status === 'draft')
                   <span class="status-badge draft">下書き</span>
+                @else
+                  <span class="status-badge closed">締切済み</span>
                 @endif
               </td>
-              <td>
-                <a class="row-actions" href="{{ route('admin.surveys.show', $survey->id) }}" title="回答状況">
+              <td onclick="event.stopPropagation()">
+                <div class="row-actions">
+                  <a class="icon-btn" href="{{ route('admin.surveys.edit', $survey->id) }}" title="編集">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg>
+                  </a>
                   <form action="{{ route('admin.surveys.destroy', $survey->id) }}" method="POST" onsubmit="return confirm('このアンケートを削除しますか？');">
                     @csrf
                     @method('DELETE')
@@ -227,7 +239,7 @@
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg>
                     </button>
                   </form>
-                </a>
+                </div>
               </td>
             </tr>
           @empty

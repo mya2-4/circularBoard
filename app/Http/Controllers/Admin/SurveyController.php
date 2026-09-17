@@ -121,7 +121,7 @@ public function index(Request $request)
             })
             ->whereNotNull('answer_text')
             ->where('answer_text', '!=', '')
-            ->with('question')
+            ->with(['question', 'response.user'])
             ->latest()
             ->get()
             ->groupBy('survey_question_id');
@@ -136,21 +136,6 @@ public function index(Request $request)
         return redirect()
             ->route('admin.surveys.index')
             ->with('success', 'アンケートを削除しました');
-    }
-
-    public function show(Survey $survey)
-    {
-        if ($survey->status !== 'open') {
-            abort(404);
-        }
-
-        $survey->load(['questions.options']);
-
-        $alreadyAnswered = $survey->responses()
-            ->where('user_id', auth()->id())
-            ->exists();
-
-        return view('residentsScreen.survey-show', compact('survey', 'alreadyAnswered'));
     }
 
 }
