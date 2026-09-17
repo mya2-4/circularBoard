@@ -14,8 +14,8 @@ class EventParticipant extends Model
         return $this->belongsTo(Event::class);
     }
 
-    public function getParticipantsCountAttribute(): int
+    public function user(): BelongsTo
     {
-        return $this->participants()->sum('participant_count');
+        return $this->belongsTo(User::class);
     }
 }

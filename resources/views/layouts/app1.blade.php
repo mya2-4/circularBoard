@@ -382,7 +382,6 @@
                 </svg>
 
                 イベント
-                <span class="count">{{ $upcomingCount ?? '' }}</span>
             </a>
 
 
@@ -411,8 +410,8 @@
         <div class="account">
             <div class="avatar">{{ mb_substr(auth()->user()->name ?? '管', 0, 1) }}</div>
             <div>
-                <div class="account-name">{{ auth()->user()->name ?? '管理者アカウント' }}</div>
-                <div class="account-role">{{ auth()->user()->area ?? '中村区 事務局' }}</div>
+                <div class="account-name">{{ auth()->user()->last_name . ' ' . auth()->user()->first_name }}</div>
+                <div class="account-role">{{ auth()->user()->region .'事務局'}}</div>
             </div>
         </div>
 

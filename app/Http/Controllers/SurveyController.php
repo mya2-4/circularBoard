@@ -27,21 +27,6 @@ class SurveyController extends Controller
         return view('residentsScreen.survey', compact('surveys'));
     }
 
-    public function show(Survey $survey)
-    {
-        if ($survey->status !== 'open') {
-            abort(404);
-        }
-
-        $survey->load(['questions.options']);
-
-        $alreadyAnswered = $survey->responses()
-            ->where('user_id', auth()->id())
-            ->exists();
-
-        return view('residentsScreen.survey-show', compact('survey', 'alreadyAnswered'));
-    }
-
     public function store(Request $request, Survey $survey)
     {
         if ($survey->status !== 'open') {

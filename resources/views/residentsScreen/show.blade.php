@@ -175,8 +175,8 @@
       <div class="brand-sub">COMMUNITY PORTAL</div>
     </div>
     <div class="location">
-      <strong>名古屋市中村区</strong>
-      名駅2丁目
+      <strong>{{ auth()->user()->region }}</strong>
+      {{ auth()->user()->region2 }}
     </div>
     <nav>
       <a href="{{ route('home') }}" class="nav-item {{ request()->routeIs('home') || request()->routeIs('posts.show') ? 'active' : '' }}">

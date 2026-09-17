@@ -232,8 +232,8 @@
         </div>
 
         <div class="location">
-            <strong>名古屋市中村区</strong>
-            名駅2丁目
+            <strong>{{ auth()->user()->region }}</strong>
+            {{ auth()->user()->region2 }}
         </div>
 
         <nav>
@@ -328,7 +328,7 @@
             </h1>
 
             <div class="greet">
-                こんにちは、<b>こんどうさん</b>
+                こんにちは、<b>{{ auth()->user()->last_name }}さん</b>
             </div>
 
         </header>

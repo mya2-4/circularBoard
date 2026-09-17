@@ -17,17 +17,6 @@ class EventController extends Controller
         return view('residentsScreen.event', compact('events'));
     }
 
-    public function show(Event $event)
-    {
-        $event->loadSum('participants', 'participant_count');
-
-        $myParticipation = $event->participants()
-            ->where('user_id', auth()->id())
-            ->first();
-
-        return view('residentsScreen.event-show', compact('event', 'myParticipation'));
-    }
-
     public function participate(Request $request, Event $event)
 {
     if ($event->status !== 'open') {

@@ -213,7 +213,7 @@
 
           <div class="field">
             <label for="remarks">連絡事項（任意）</label>
-            <textarea id="remarks" name="remarks" rows="3" placeholder="アレルギーの有無、送迎の要否など">{{ old('remarks') }}</textarea>
+            <textarea id="remarks" name="remarks" rows="3" placeholder="何か連絡があれば入力してください。">{{ old('remarks') }}</textarea>
             @error('remarks') <div class="error-text">{{ $message }}</div> @enderror
           </div>
 

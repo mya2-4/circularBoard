@@ -78,8 +78,8 @@
   }
   .radio-option:hover{ background:#FBFAF6; }
   .radio-option input{ margin-top:3px; accent-color: var(--accent-deep); flex-shrink:0; }
-  .radio-option .opt-title{ font-size:13.5px; font-weight:500; color:var(--ink); }
-  .radio-option .opt-desc{ font-size:11.5px; color:var(--ink-soft); margin-top:2px; line-height:1.5; }
+  .radio-option { font-size:13.5px; font-weight:500; color:var(--ink); }
+  .radio-option { font-size:11.5px; color:var(--ink-soft); margin-top:2px; line-height:1.5; }
   .radio-option:has(input:checked){ border-color: var(--accent-deep); background:#F3F6F4; }
 
   .checkbox-row{
@@ -127,9 +127,9 @@
                 <div class="field">
                     <label for="title">タイトル <span class="required">必須</span></label>
                     <input id="title" name="title" type="text"
-                           class="@error('title') is-invalid @enderror"
-                           value="{{ old('title') }}"
-                           placeholder="例：秋祭り開催のお知らせ">
+                          class="@error('title') is-invalid @enderror"
+                          value="{{ old('title') }}"
+                          placeholder="例：秋祭り開催のお知らせ">
                     @error('title')
                         <div class="error">{{ $message }}</div>
                     @enderror
@@ -152,8 +152,8 @@
                     <div class="field">
                         <label for="summary">一覧表示用の要約</label>
                         <input id="summary" name="summary" type="text"
-                               value="{{ old('summary') }}"
-                               placeholder="一覧に表示される短い説明文">
+                              value="{{ old('summary') }}"
+                              placeholder="一覧に表示される短い説明文">
                     </div>
                 </div>
 
@@ -190,23 +190,11 @@
                     <label for="status">公開状態 <span class="required">必須</span></label>
                     <select id="status" name="status" class="@error('status') is-invalid @enderror">
                         <option value="draft"  {{ old('status', 'draft') === 'draft'  ? 'selected' : '' }}>下書き保存</option>
-                        <option value="public" {{ old('status') === 'public' ? 'selected' : '' }}>今すぐ公開する</option>
+                        <option value="public" {{ old('status') === 'public' ? 'selected' : '' }}>公開する</option>
                     </select>
                     @error('status')
                         <div class="error">{{ $message }}</div>
                     @enderror
-                </div>
-
-                <div class="field">
-                    <label for="published_at_date">公開日</label>
-                    <input id="published_at_date" name="published_at_date" type="date"
-                           value="{{ old('published_at_date', now()->format('Y-m-d')) }}">
-                </div>
-
-                <div class="field">
-                    <label for="published_at_time">公開時刻</label>
-                    <input id="published_at_time" name="published_at_time" type="time"
-                           value="{{ old('published_at_time', '09:00') }}">
                 </div>
             </div>
 
@@ -215,7 +203,7 @@
                 <div class="radio-group">
                     <label class="radio-option">
                         <input type="radio" name="read_mode" value="read_only"
-                               {{ old('read_mode', 'read_only') === 'read_only' ? 'checked' : '' }}>
+                              {{ old('read_mode', 'read_only') === 'read_only' ? 'checked' : '' }}>
                         <div>
                             <div class="opt-title">閲覧のみ記録</div>
                             <div class="opt-desc">投稿を開いた時点で「既読」として記録します。</div>
@@ -223,35 +211,13 @@
                     </label>
                     <label class="radio-option">
                         <input type="radio" name="read_mode" value="confirmation_required"
-                               {{ old('read_mode') === 'confirmation_required' ? 'checked' : '' }}>
+                              {{ old('read_mode') === 'confirmation_required' ? 'checked' : '' }}>
                         <div>
                             <div class="opt-title">確認ボタンを必須にする</div>
                             <div class="opt-desc">住民が「確認しました」ボタンを押すまで「未確認」として扱います。</div>
                         </div>
                     </label>
                 </div>
-                <label class="checkbox-row">
-                    <input type="checkbox" name="send_reminder" value="1"
-                           {{ old('send_reminder', true) ? 'checked' : '' }}>
-                    <div>
-                        <div class="opt-title">未確認者へリマインド通知を送る</div>
-                        <div class="opt-desc">公開から3日後、未確認の住民に自動で通知します。</div>
-                    </div>
-                </label>
-            </div>
-
-            <div class="card">
-                <h2 class="card-title">配信対象地域</h2>
-                <div class="region-list">
-                    @foreach (($regions ?? []) as $region)
-                        <label class="region-item">
-                            <input type="checkbox" name="regions[]" value="{{ $region->id }}"
-                                   {{ in_array($region->id, old('regions', [])) ? 'checked' : '' }}>
-                            {{ $region->name }}
-                        </label>
-                    @endforeach
-                </div>
-                <div class="region-count">配信対象世帯数 <b>{{ $householdCount ?? '—' }}</b> 世帯</div>
             </div>
 
             <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">

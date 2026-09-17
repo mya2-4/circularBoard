@@ -1,3 +1,17 @@
+@extends('layouts.app1')
+
+@section('title', '回覧管理')
+@section('description', '地域住民に配信する回覧・お知らせを管理します')
+
+@section('header-actions')
+    <a href="{{ route('admin.posts.create') }}" class="btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        新規作成
+    </a>
+@endsection
+
+@push('styles')
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -146,14 +160,6 @@
   .tab .tab-count{ font-size:11px; color:#9A978C; }
   .tab.active{ color:var(--ink); font-weight:700; border-bottom-color: var(--accent-deep); }
   .tab.active .tab-count{ color:var(--ink-soft); }
-
-  .search-box{
-    display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--line);
-    border-radius:6px; padding:9px 12px; width:240px;
-  }
-  .search-box svg{ width:15px; height:15px; color:#9A978C; flex-shrink:0; }
-  .search-box input{ border:none; outline:none; font-size:13px; font-family:inherit; width:100%; color:var(--ink); background:transparent; }
-  .search-box input::placeholder{ color:#B9B6AA; }
 
   .content{ padding:20px 36px 40px; overflow-y:auto; }
 
@@ -317,10 +323,7 @@
           未読 <span class="tab-count">{{ $unreadCount }}</span>
         </a>
       </div>
-      <div class="search-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="text" placeholder="世帯・氏名で検索">
-      </div>
+      
     </div>
 
     <div class="content">

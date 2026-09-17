@@ -248,8 +248,8 @@
       <div class="brand-sub">COMMUNITY PORTAL</div>
     </div>
     <div class="location">
-      <strong>名古屋市中村区</strong>
-      名駅2丁目
+      <strong>{{ auth()->user()->region }}</strong>
+      {{ auth()->user()->region2 }}
     </div>
     <nav>
     <a href="{{ route('home') }}"
@@ -288,7 +288,7 @@
   <div class="main">
     <header>
       <h1>ホーム</h1>
-      <div class="greet">こんにちは、<b>{{ auth()->user()->name ?? 'ゲスト' }}さん</b></div>
+      <div class="greet">こんにちは、<b>{{ auth()->user()->last_name }}さん</b></div>
     </header>
     <div class="tabs">
       <a href="{{ route('home') }}" class="tab {{ request('view') === null ? 'active' : '' }}">すべて</a>

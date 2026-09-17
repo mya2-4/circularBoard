@@ -159,25 +159,16 @@
   .row-between{
     display:flex;
     align-items:center;
-    justify-content:space-between;
+    justify-content: right;
     margin:-6px 0 28px;
     font-size:12.5px;
   }
-  .remember{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    color:var(--ink-soft);
-  }
-  .remember input{
-    width:14px;
-    height:14px;
-    accent-color: var(--accent-deep);
-  }
+
   .link{
     color:var(--accent-deep);
     text-decoration:none;
     font-weight:500;
+
   }
   .link:hover{ text-decoration:underline; }
 
@@ -274,13 +265,9 @@
           </div>
 
           <div class="row-between">
-            <label class="remember">
-              <input type="checkbox" name="remember">
-              ログイン状態を保存
-            </label>
 
-            <a class="link" href="#">
-              パスワードをお忘れの方
+            <a class="link" href="register">
+              新規アカウント登録の方
             </a>
           </div>
 

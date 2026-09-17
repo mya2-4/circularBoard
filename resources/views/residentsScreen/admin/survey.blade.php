@@ -69,27 +69,6 @@
     font-weight:700;
     border-bottom-color: var(--accent-deep);
   }
-  .search-box{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:9px 12px;
-    width:260px;
-  }
-  .search-box svg{ width:15px; height:15px; color:#9A978C; flex-shrink:0; }
-  .search-box input{
-    border:none;
-    outline:none;
-    font-size:13px;
-    font-family:inherit;
-    width:100%;
-    color:var(--ink);
-    background:transparent;
-  }
-  .search-box input::placeholder{ color:#B9B6AA; }
 
   .table-card{
     background:var(--card);
@@ -188,12 +167,7 @@
         <a href="{{ route('admin.surveys.index') }}" class="tab {{ request('status') === null ? 'active' : '' }}">すべて</a>
         <a href="{{ route('admin.surveys.index', ['status' => 'open']) }}" class="tab {{ request('status') === 'open' ? 'active' : '' }}">受付中</a>
         <a href="{{ route('admin.surveys.index', ['status' => 'draft']) }}" class="tab {{ request('status') === 'draft' ? 'active' : '' }}">下書き</a>
-        <a href="{{ route('admin.surveys.index', ['status' => 'closed']) }}" class="tab {{ request('status') === 'closed' ? 'active' : '' }}">締切済み</a>
       </div>
-      <form class="search-box" method="GET" action="{{ route('admin.surveys.index') }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="text" name="q" value="{{ request('q') }}" placeholder="アンケートを検索">
-      </form>
     </div>
 
     <div class="table-card">
@@ -240,20 +214,12 @@
               <td>
                 @if ($survey->status === 'open')
                   <span class="status-badge open">受付中</span>
-                @elseif ($survey->status === 'draft')
+                @else ($survey->status === 'draft')
                   <span class="status-badge draft">下書き</span>
-                @else
-                  <span class="status-badge closed">締切済み</span>
                 @endif
               </td>
               <td>
-                <div class="row-actions">
-                <a class="icon-btn" href="{{ route('admin.surveys.show', $survey->id) }}" title="回答状況">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 17v-6a3 3 0 0 1 6 0v6M5 21h14a1 1 0 0 0 1-1V10L12 3 4 10v10a1 1 0 0 0 1 1Z"/></svg>
-                  </a>
-                  <a class="icon-btn" href="{{ route('admin.surveys.edit', $survey->id) }}" title="編集">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg>
-                  </a>
+                <a class="row-actions" href="{{ route('admin.surveys.show', $survey->id) }}" title="回答状況">
                   <form action="{{ route('admin.surveys.destroy', $survey->id) }}" method="POST" onsubmit="return confirm('このアンケートを削除しますか？');">
                     @csrf
                     @method('DELETE')
@@ -261,7 +227,7 @@
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7"/></svg>
                     </button>
                   </form>
-                </div>
+                </a>
               </td>
             </tr>
           @empty

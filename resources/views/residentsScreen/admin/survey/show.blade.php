@@ -8,7 +8,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg>
         編集
     </a>
-    <a href="{{ route('admin.surveys.index') }}" class="btn-cancel">一覧へ戻る</a>
+    <a href="{{ route('admin.survey.index') }}" class="btn-cancel">一覧へ戻る</a>
 @endsection
 
 @push('styles')
@@ -85,10 +85,8 @@
   <div class="meta-row">
     @if ($survey->status === 'open')
       <span class="status-badge open">受付中</span>
-    @elseif ($survey->status === 'draft')
+    @else ($survey->status === 'draft')
       <span class="status-badge draft">下書き</span>
-    @else
-      <span class="status-badge closed">締切済み</span>
     @endif
     <span>{{ $survey->category }}</span>
     <span>

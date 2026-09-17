@@ -44,17 +44,6 @@
     padding:9px 12px;
     width:260px;
   }
-  .search-box svg{ width:15px; height:15px; color:#9A978C; flex-shrink:0; }
-  .search-box input{
-    border:none;
-    outline:none;
-    font-size:13px;
-    font-family:inherit;
-    width:100%;
-    color:var(--ink);
-    background:transparent;
-  }
-  .search-box input::placeholder{ color:#B9B6AA; }
 
   .table-card{
     background:var(--card);
@@ -145,10 +134,6 @@
             <a href="{{ route('admin.posts.index', ['status' => 'public']) }}" class="tab {{ request('status') === 'public' ? 'active' : '' }}">公開中</a>
             <a href="{{ route('admin.posts.index', ['status' => 'draft']) }}" class="tab {{ request('status') === 'draft' ? 'active' : '' }}">下書き</a>
         </div>
-        <form class="search-box" method="GET" action="{{ route('admin.posts.index') }}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input type="text" name="q" value="{{ request('q') }}" placeholder="回覧を検索">
-        </form>
     </div>
 
     <div class="table-card">
@@ -180,9 +165,6 @@
                         <td>{{ $post->status === 'public' ? $post->views_count : '—' }}</td>
                         <td onclick="event.stopPropagation()">
                             <div class="row-actions">
-                                <a class="icon-btn" href="{{ route('admin.posts.show', $post->id) }}" title="閲覧状況">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                                </a>
                                 <a class="icon-btn" href="{{ route('admin.posts.edit', $post->id) }}" title="編集">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg>
                                 </a>

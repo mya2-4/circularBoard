@@ -224,6 +224,7 @@
     letter-spacing:0.05em;
     cursor:pointer;
     transition: background 0.15s ease;
+    margin-top: 20px;
   }
   .btn-primary:hover{ background:var(--panel-soft); }
 
@@ -231,7 +232,7 @@
     text-align:center;
     font-size:13px;
     color:var(--ink-soft);
-    margin-top:22px;
+    margin-top:20px;
   }
 
   @media (max-width: 900px){
@@ -360,16 +361,6 @@
             placeholder="もう一度入力してください"
           >
         </div>
-
-        <label class="terms">
-          <input type="checkbox" name="terms">
-          <span>
-            <a class="link" href="#">利用規約</a>
-            および
-            <a class="link" href="#">プライバシーポリシー</a>
-            に同意します
-          </span>
-        </label>
 
         <button type="submit" class="btn-primary">
           アカウントを作成

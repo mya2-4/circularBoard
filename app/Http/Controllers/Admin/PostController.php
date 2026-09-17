@@ -9,19 +9,12 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    /**
-     * 回覧一覧（管理画面）
-     */
     public function index(Request $request)
     {
         $query = Post::query();
 
         if ($request->filled('status')) {
             $query->where('status', $request->query('status'));
-        }
-
-        if ($request->filled('q')) {
-            $query->where('title', 'like', '%' . $request->query('q') . '%');
         }
 
         $posts = $query->orderByDesc('published_at')->paginate(15)->withQueryString();
@@ -34,7 +27,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('admin.posts.create');
+        return view('residentsScreen.create');
     }
 
     /**
@@ -66,13 +59,10 @@ class PostController extends Controller
         );
 
         return redirect()
-            ->route('admin.posts.show', $post->id)
+            ->route('admin.posts.index')
             ->with('success', '投稿を作成しました');
     }
 
-    /**
-     * 詳細（閲覧状況）
-     */
     public function show(Request $request, Post $post)
     {
         $query = $post->reads()->with('user');
@@ -93,45 +83,11 @@ class PostController extends Controller
         ));
     }
 
-    /**
-     * 編集フォーム
-     */
     public function edit(Post $post)
     {
         return view('admin.posts.edit', compact('post'));
     }
 
-    /**
-     * 更新
-     */
-    public function update(Request $request, Post $post)
-    {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'category'      => 'nullable|string|max:100',
-            'summary'       => 'nullable|string',
-            'body'          => 'required|string',
-            'status'        => 'required|in:public,draft',
-            'read_mode'     => 'nullable|string',
-            'send_reminder' => 'nullable|boolean',
-        ]);
-
-        $wasNotPublic = $post->status !== 'public';
-
-        $post->update($validated);
-
-        if ($wasNotPublic && $post->status === 'public') {
-            $post->update(['published_at' => now()]);
-        }
-
-        return redirect()
-            ->route('admin.posts.index')
-            ->with('success', '投稿を更新しました');
-    }
-
-    /**
-     * 削除
-     */
     public function destroy(Post $post)
     {
         $post->delete();

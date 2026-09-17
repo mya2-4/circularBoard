@@ -16,11 +16,7 @@ class EventController extends Controller
       if ($request->filled('status')) {
           $query->where('status', $request->query('status'));
       }
-  
-      if ($request->filled('q')) {
-          $query->where('title', 'like', '%' . $request->query('q') . '%');
-      }
-  
+
       $events = $query->orderByDesc('start_at')->paginate(10)->withQueryString();
   
       $upcomingCount = Event::whereIn('status', ['open', 'closed'])->where('start_at', '>=', now())->count();
@@ -72,5 +68,17 @@ class EventController extends Controller
       return redirect()
           ->route('admin.events.index')
           ->with('success', 'イベントを作成しました');
+  }
+
+  public function show(Request $request, Event $event)
+  {
+      $participants = $event->participants()
+          ->with('user')
+          ->latest('updated_at')
+          ->paginate(15);
+
+      $totalParticipants = $event->participants()->sum('participant_count');
+
+      return view('residentsScreen.admin.event.show', compact('event', 'participants', 'totalParticipants'));
   }
 }

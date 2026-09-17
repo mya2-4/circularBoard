@@ -39,7 +39,6 @@ class PostController extends Controller
     {
         $posts = Post::query()
             ->when($request->status, fn ($q) => $q->where('status', $request->status))
-            ->when($request->q, fn ($q) => $q->where('title', 'like', "%{$request->q}%"))
             ->latest('published_at')
             ->paginate(10)
             ->withQueryString();
@@ -109,7 +108,7 @@ class PostController extends Controller
         }
 
         return redirect()
-            ->route('admin.posts.index')
+            ->route('admin.post.index')
             ->with('success', '投稿を作成しました');
     }
 

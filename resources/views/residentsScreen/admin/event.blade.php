@@ -74,27 +74,6 @@
     font-weight:700;
     border-bottom-color: var(--accent-deep);
   }
-  .search-box{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:9px 12px;
-    width:260px;
-  }
-  .search-box svg{ width:15px; height:15px; color:#9A978C; flex-shrink:0; }
-  .search-box input{
-    border:none;
-    outline:none;
-    font-size:13px;
-    font-family:inherit;
-    width:100%;
-    color:var(--ink);
-    background:transparent;
-  }
-  .search-box input::placeholder{ color:#B9B6AA; }
 
   .table-card{
     background:var(--card);
@@ -196,10 +175,7 @@
         <a href="{{ route('admin.events.index', ['status' => 'closed']) }}" class="tab {{ request('status') === 'closed' ? 'active' : '' }}">受付終了</a>
         <a href="{{ route('admin.events.index', ['status' => 'ended']) }}" class="tab {{ request('status') === 'ended' ? 'active' : '' }}">開催終了</a>
       </div>
-      <form class="search-box" method="GET" action="{{ route('admin.events.index') }}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="text" name="q" value="{{ request('q') }}" placeholder="イベントを検索">
-      </form>
+      
     </div>
 
     <div class="table-card">
@@ -216,7 +192,7 @@
         </thead>
         <tbody>
           @forelse ($events as $event)
-            <tr>
+            <tr class="clickable-row" onclick="window.location='{{ route('admin.events.show', $event->id) }}'">
               <td>
                 <div class="event-title">{{ $event->title }}</div>
                 <div class="event-sub">{{ $event->category }}</div>
@@ -245,11 +221,8 @@
                   <span class="status-badge ended">開催終了</span>
                 @endif
               </td>
-              <td>
+              <td onclick="event.stopPropagation()">
                 <div class="row-actions">
-                  <a class="icon-btn" href="{{ route('admin.events.show', $event->id) }}" title="参加状況">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5c-7 0-9.5 7-9.5 7s2.5 7 9.5 7 9.5-7 9.5-7-2.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                  </a>
                   <a class="icon-btn" href="{{ route('admin.events.edit', $event->id) }}" title="編集">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20h4L18 10a2.8 2.8 0 0 0-4-4L4 16v4Z"/></svg>
                   </a>

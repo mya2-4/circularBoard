@@ -22,10 +22,6 @@ public function index(Request $request)
         $query->where('status', $request->status);
     }
 
-    if ($request->filled('q')) {
-        $query->where('title', 'like', '%' . $request->q . '%');
-    }
-
     $surveys = $query->orderBy('created_at', 'desc')
         ->paginate(15)
         ->withQueryString();
@@ -141,4 +137,20 @@ public function index(Request $request)
             ->route('admin.surveys.index')
             ->with('success', 'アンケートを削除しました');
     }
+
+    public function show(Survey $survey)
+    {
+        if ($survey->status !== 'open') {
+            abort(404);
+        }
+
+        $survey->load(['questions.options']);
+
+        $alreadyAnswered = $survey->responses()
+            ->where('user_id', auth()->id())
+            ->exists();
+
+        return view('residentsScreen.survey-show', compact('survey', 'alreadyAnswered'));
+    }
+
 }
